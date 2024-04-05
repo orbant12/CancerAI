@@ -14,8 +14,8 @@ return(
             <h5>Bolt</h5>
         </div>
         <div className="nav-other">
-            <h5>1</h5>
-            <h5>2</h5>
+            <h5>Login</h5>
+            <h5>Try for Free</h5>
         </div>
     </div>
 

@@ -35,7 +35,9 @@ export default function Home() {
         </div>
 
         <div className="hero-right">
+          <div className="hero-widget">
 
+          </div>
         </div>
       </div>
       {/*SERVICES*/}
