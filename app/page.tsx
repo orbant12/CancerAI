@@ -3,6 +3,7 @@ import "./css/home.css"
 
 import React from 'react';
 import type { SVGProps } from 'react';
+import { GoogleOriginalWordmark, GooglecloudOriginalWordmark, KaggleOriginal, LinuxOriginal, OpenapiOriginalWordmark, } from 'devicons-react';
 
 export function MedicalIconIHealthServices(props: SVGProps<SVGSVGElement>) {
 	return (<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 64 64" {...props}><path fill="currentColor" d="M21.822 62.675h20.424V42.248h20.429V21.809H42.246V1.383H21.822v20.426H1.388v20.439h20.434z"></path></svg>);
@@ -24,6 +25,12 @@ export default function Home() {
             <div className="hero-btn">
               <a href="/about">Learn More</a>
             </div>
+          </div>
+          <div className="hero-companies">
+            <LinuxOriginal size={60} opacity={0.4}/>
+            <GoogleOriginalWordmark size={60} opacity={0.4}/>
+            <GooglecloudOriginalWordmark size={60} opacity={0.4} />
+            <GooglecloudOriginalWordmark size={60} opacity={0.4} />
           </div>
         </div>
 
@@ -112,6 +119,23 @@ export default function Home() {
             <div className="service-box-btn">
               See More
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="showcase">
+        <h1 style={{padding:50}}>Prevention Over Recovery</h1>
+        <div className="showcase-table">
+          <div className="showcase-box">
+              <h4>Valami text</h4>
+              <h5>Image</h5>
+          </div>
+          <div className="showcase-box">
+              <h4>Valami text</h4>
+              <h5>Image</h5>
+          </div>
+          <div className="showcase-box">
+              <h4>Valami text</h4>
+              <h5>Image</h5>
           </div>
         </div>
       </div>
