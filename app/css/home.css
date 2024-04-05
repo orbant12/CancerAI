@@ -1,0 +1,81 @@
+.home-page{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    font-weight: 300;
+}
+
+.home-hero{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-right: auto;
+    margin-left: auto;
+    border: 1px solid black;
+    padding: 200px;
+    box-shadow: inset 1px 1px 10px 1px black;
+}
+
+.hero-left{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 0 2rem;
+}
+
+.hero-left h2{
+    font-size: 50px;
+    font-weight: 500;
+    margin-top: 2rem;
+}
+
+.hero-left h5{
+    font-size: 17px;
+    font-weight: 00;
+    opacity: 0.7;
+    margin-top: 1rem;
+    width: 50%;
+}
+
+.hero-right{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 0 2rem;
+}
+
+.hero-option-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 2rem;
+    width: 50%;
+}
+
+.hero-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: ease-in-out 0.3s;
+}
+
+.hero-btn:hover{
+    background-color: transparent;
+    border: 1px solid #000000;
+    color: black;
+}
+
+.hero-btn:hover a{
+    color: black;
+}

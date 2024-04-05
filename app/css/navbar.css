@@ -1,0 +1,35 @@
+.navbar{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    box-shadow: 1px 1px 1px 1px black;
+    padding: 10px;
+    height: 80px;
+    align-items: center;
+    justify-content: space-between;
+    background-color: black;
+}
+
+.nav-logo{
+
+}
+
+.nav-menu{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 50%;
+}
+
+.nav-other{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100px;
+}
+
+.nav-other h5{
+    border: 1px solid black;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
