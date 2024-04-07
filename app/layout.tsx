@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+//import UserAuthContext from "./auth/Context/Userauthcontext";
 
 //NAVBAR
 import NavBar from "./navbar";
@@ -23,7 +24,9 @@ export default function RootLayout({
       {/*NAVBAR*/}
       {NavBar()}
       {/*Body*/}
-      {children}
+
+        {children}
+
       </body>
     </html>
   );
