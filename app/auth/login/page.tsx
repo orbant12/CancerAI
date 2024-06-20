@@ -1,20 +1,19 @@
-//FIREBASE LOGIN PAGE FOR AUTH CONTEXT
+
 "use client";
 
 import React, { useState } from 'react';
-
 import "../css/auth.css"
-//import { useAuth } from './Context/Userauthcontext'
+import { useAuth } from '@/Context/UserAuthContext';
 import { GoogleOriginal, GoogleOriginalWordmark, GooglecloudOriginal, GooglecloudOriginalWordmark, KaggleOriginal, LinuxOriginal, OpenapiOriginalWordmark, } from 'devicons-react';
 
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-  //const { login } = useContext(useAuth);
+    const {Login, currentuser} = useAuth()
 
-function handleSubmit() {
-alert('You have successfully logged in');
+const handleSubmit = async () => {
+    await Login(email,password)
 }
 
 return (
@@ -28,8 +27,8 @@ return (
 
     <div className='login-right'>
         <div className='login-right-content'>
-            <h1>Login</h1>
-            <h5 style={{marginTop:-30,width:300,opacity:0.3}}>dsdsdsdsa dksahd lonsakjdn lskdmskmdl smdlsmmlosmd</h5>
+            <h1>Assistant Login</h1>
+            <h5 style={{marginTop:-30,width:300,opacity:0.3}}>This login form is for registered assistants working for Pocket Protect</h5>
             <form onSubmit={handleSubmit}>
                 <div className='form-group'>
                     <label>Email</label>
