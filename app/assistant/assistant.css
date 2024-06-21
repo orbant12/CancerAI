@@ -177,3 +177,111 @@
     margin:10px;
     cursor: pointer;
 }
+
+.back_icon h5{
+    color: rgb(255, 255, 255);
+    opacity: 0.8;
+}
+
+.back_icon:hover h5{
+    color: black;
+}
+
+.bubble{
+    padding: 10px;
+    background: transparent;
+    border-radius: 100px;
+    margin: 8px;
+    cursor: pointer;
+}
+
+.bubble:hover{
+    padding: 10px;
+    background: rgb(242, 242, 242);
+    border-radius: 100px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.bubble.active h4{
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.8;
+    padding: 5px 10px;
+    
+}
+
+
+.bubble h4{
+    color: rgb(0, 0, 0);
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.8;
+    padding: 5px 10px;
+    
+}
+
+.bubble.active{
+    padding: 10px;
+    background: black;
+    border-radius: 100px;
+}
+
+.tool-btn{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    border:1px solid magenta;
+}
+
+.tool-btn:hover{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: rgb(255, 148, 243);
+    border-radius: 10px;
+    border:3px solid rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+.image-edit:hover{
+    cursor:zoom-in;
+}
+
+.element {
+    position: absolute;
+    pointer-events: none;
+    bottom: 100%;
+    transform: translateY(-50%) translateX(-50%);
+    left: 50%;
+    border-width: 8px;
+    border-color: #5a67d8; /* This is the approximate hex code for indigo-500 */
+    border-style: solid;
+    width: 15rem; /* Equivalent to w-32 */
+    height: 15rem; /* Equivalent to h-32 */
+    z-index: 10;
+    background-color: #edf2f7; /* This is the approximate hex code for bg-gray-200 */
+  }
+  
+  @media (min-width: 768px) {
+    .element {
+      transform: translateY(0) translateX(0);
+      bottom: 4.2rem; /* Equivalent to md:bottom-16 */
+      right: -4rem; /* Equivalent to md:-left-16 */
+    }
+  }
+
+  .cursor-element {
+    position: absolute;
+    pointer-events: none;
+    border-width: 1px; /* Assuming you want a 1px border as in border-sky-500 */
+    border-color: #ff0000; /* This is the approximate hex code for border-sky-500 */
+    border-style: solid;
+  }

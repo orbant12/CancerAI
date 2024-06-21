@@ -1,7 +1,7 @@
 "use client"
 
 import { SlArrowRightCircle,SlBubble,SlEnvolopeLetter, SlCheck,SlClose,SlArrowLeftCircle } from "react-icons/sl";
-import {Progress} from "@nextui-org/progress"
+
 import "../assistant.css"
 import { useEffect,useState } from "react";
 import { fetchSessions_All } from "@/services/api";
@@ -59,10 +59,10 @@ const Mole_Check_Stages = [
 ]
     return(
         <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
-            <BackIcon handleBack={() => router.back()} />
+            
             <div style={{display:"flex",flexDirection:"row",padding:50,width:"100%",justifyContent:"space-between",alignItems:"center"}}>
                 <h2>Your Active Sessions</h2>
-                <SlEnvolopeLetter color="black" />
+                <BackIcon handleBack={() => router.back()} />
             </div>
             <div style={{display:"flex",flexDirection:"column",width:"100%",alignItems:"center"}}>
                 {activeSessions.map((data) => (
@@ -95,7 +95,7 @@ const SessionBar = ({props}:{props: SessionType}) => {
             </div>
             <div style={{display:"flex",flexDirection:"column",width:"100%",marginTop:30,padding:10}}>                
                 <h3 style={{fontSize:18}}><span style={{fontWeight:500,opacity:0.8}}>Item:</span> 3x Mole Check</h3>
-                <Progress aria-label="Loading..." value={60} className="max-w-md" color={"danger"}/>
+                
             </div>
             <div style={{display:"flex",flexDirection:"row",width:"100%",marginTop:3,padding:10,flexWrap:"wrap",justifyContent:"center"}}> 
                 <StageBox 
@@ -147,7 +147,7 @@ const StageBox = ({
 export function BackIcon ({handleBack}:{handleBack:() => void}){
     return(
         <div className="back_icon" onClick={handleBack}>
-            <SlArrowLeftCircle color="white" />
+            <h5>Back</h5>
         </div>
     )
 }

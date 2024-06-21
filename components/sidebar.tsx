@@ -81,12 +81,13 @@ const LoggedOn_Navbar = ({
     </nav>
     ) : (
       <nav ref={navRef} style={{width:100,height:"100%",flexDirection:"column",display:"flex",alignItems:"center",justifyContent:"space-between",zIndex:10,boxShadow:"0px 0px 5px 1px black"}}>
+          <div onClick={() => setActive(!active)} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:72,flexDirection:"column",display:"flex"}}>
+            <SlArrowRight size={13} color='white' />
+          </div>
       <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%"}}>
         <span style={{width:"100%",padding:0,fontSize:20,fontWeight:500,color:"black",textDecoration:"none",flexDirection:"row",display:"flex"}}>
           <a style={{textDecoration:"none",fontWeight:500,color:"black"}} href="/">Logo</a>
-          <div onClick={() => setActive(!active)} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:50,flexDirection:"column",display:"flex"}}>
-            <SlArrowRight size={13} color='white' />
-          </div>
+      
         </span>
 
         <div style={{flexDirection:"column",width:"100%",display:"flex",alignItems:"center"}}>
@@ -97,6 +98,7 @@ const LoggedOn_Navbar = ({
             <SlBubble size={22} color='white' />
           </div>
         </div>
+        
 
         <div style={{flexDirection:"column",display:"flex"}}>
           <div className="nav-more">
