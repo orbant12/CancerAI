@@ -29,7 +29,7 @@ return (
         <div className='login-right-content'>
             <h1>Assistant Login</h1>
             <h5 style={{marginTop:-30,width:300,opacity:0.3}}>This login form is for registered assistants working for Pocket Protect</h5>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <div className='form-group'>
                     <label>Email</label>
                     <input type='email' placeholder='Enter your email' value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -41,14 +41,16 @@ return (
                 <div className='other'>
                     <div className='remember-me'>
                         <input type='checkbox' />
-                        <label>Remember me</label>
+                        <label style={{marginLeft:10,fontWeight:"500",fontSize:13,opacity:0.7}}>Remember me</label>
                     </div>
                     <div className='forgot-pass'>
                         <a href='#'>Forgot Password?</a>
                     </div>
                 </div>
                 <div className='form-group'>
-                    <button type='submit'>Login</button>
+                    <div onClick={handleSubmit}>
+                    <h3>Login</h3>
+                    </div>
                 </div>
             </form>
         </div>

@@ -154,70 +154,7 @@ transform: scale(1.07);
     opacity: 0.7;
 }
 
-.services-row{
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    justify-content: space-between;
-}
 
-.service-box{
-    display: flex;
-    flex-direction: column;
-    width: 350px;
-    padding: 1rem;
-    border: 1px solid black;
-    border-radius: 5px;
-    margin: 1rem;
-    transition: ease-in-out 0.3s;
-}
-
-.service-box:hover{
-    background-color: #000000;
-    color: white;
-    cursor: pointer;
-}
-
-.service-box-title{
-    display: flex;
-    flex-direction: row;
-    font-size: 20px;
-    font-weight: 500;
-    justify-content: space-evenly;
-    align-items: center;
-    width: 80%;
-}
-
-.service-box h6{
-    font-size: 15px;
-    font-weight: 400;
-    opacity: 0.5;
-    margin-top: 1rem;
-}
-
-.service-box-btn{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #000000;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: ease-in-out 0.3s;
-    width: 150px;
-    margin-top: 1rem;
-}
-
-.service-box-btn:hover{
-    transform: scale(0.9);
-}
-
-.service-box:hover .service-box-btn{
-    background-color: white;
-    border: 1px solid #000000;
-    color: black;
-}
 
 /* *******> showcase <**********/
 
