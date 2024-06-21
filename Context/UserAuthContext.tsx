@@ -10,11 +10,16 @@ interface UserAuthContextProps {
 }
 
 interface AuthContextType {
-  currentuser?: User | null;
+  currentuser: User | null;
   Login: (email: string, password: string) => Promise<void>;
   SignUp?: () => void;
   error?: any;
 }
+
+const unauth_accessed_paths = [
+  "/auth/login",
+  "/"
+]
 
 const UserContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -34,11 +39,15 @@ const UserAuthContextProvider = ({ children }: UserAuthContextProps) => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         setuser(user);
-        if (window.location.pathname === "/login" || window.location.pathname === "/register") {
-          window.location.href = "/landing";
+        if (window.location.pathname === "/auth/login" || window.location.pathname === "/register") {
+          window.location.href = "/assistant";
         }
+        console.log(user.uid)
       } else {
         setuser(null);
+        if (!unauth_accessed_paths.includes(window.location.pathname)) {
+          window.location.replace("/");
+        }
       }
     });
     

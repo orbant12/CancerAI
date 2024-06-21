@@ -1,6 +1,11 @@
 import { collection, doc,getDocs, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
+interface FetchingProps{
+    userId: string;
+}
+
+
 
 export const fetchAllAssistantIDs = async () => {
     try {
@@ -18,7 +23,7 @@ export const fetchAllAssistantIDs = async () => {
     }
 };
 
-export const fetchSingleAssistantData = async ({ userId }: { userId: string }) => {
+export const fetchSingleAssistantData = async ({ userId }:FetchingProps) => {
     try {
         const ref = doc(db, "assistants", userId);
         const snapshot = await getDoc(ref);
@@ -33,3 +38,20 @@ export const fetchSingleAssistantData = async ({ userId }: { userId: string }) =
         return [];
     }
 };
+
+
+export const fetchSessions_All = async ({ userId }:FetchingProps) => {
+    try{
+        const ref = collection(db, "assistants",userId,"Sessions");
+        const snapshot = await getDocs(ref);
+        let assistantSession: any[] = [];
+        snapshot.forEach((doc) => {
+            assistantSession.push(doc.data());
+        });
+        console.log(assistantSession)
+        return assistantSession;
+    } catch(err) {
+        console.log(err)
+        return [{err}]
+    }
+}
