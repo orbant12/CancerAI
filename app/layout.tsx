@@ -26,7 +26,7 @@ export default function RootLayout({
       <UserAuthContextProvider>
         <NavBar  />
         {/*Body*/}
-        <main style={{width:"100%",height:"100%"}} >
+        <main style={{width:"100%",minHeight:"100%"}} >
           {children}
         </main>
         </UserAuthContextProvider>

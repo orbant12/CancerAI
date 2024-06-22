@@ -15,18 +15,18 @@ export function useMouseOverZoom(
     // Compute the part of the image to zoom based on mouse position
     const zoomBounds = useMemo(() => {
       return {
-        left: x - radius,
-        top: y - radius,
-        width: radius * 1,
-        height: radius * 1,
+        left: x - radius ,
+        top: y - radius ,
+        width: radius * 2,
+        height: radius * 2,
       }
     }, [x, y]);
     // move the cursor to the mouse position
     useEffect(() => {
       if (cursor.current) {
         const { left, top, width, height } = zoomBounds;
-        cursor.current.style.left = `${left + 860}px`;
-        cursor.current.style.top = `${top+140}px`;
+        cursor.current.style.left = `${left}px`;
+        cursor.current.style.top = `${top}px`;
         cursor.current.style.width = `${width}px`;
         cursor.current.style.height = `${height}px`;
       }
@@ -41,7 +41,7 @@ export function useMouseOverZoom(
           ctx.drawImage(
             source.current,
             left * imageRatio,
-            top * imageRatio,
+            top * imageRatio + 100,
             width * imageRatio,
             height * imageRatio,
             0,
@@ -72,7 +72,7 @@ function useMouse(ref: React.RefObject<HTMLElement>) {
         };
         ref.current.addEventListener("mousemove", handleMouseMove);
         return () => {
-          ref.current!.removeEventListener("mousemove", handleMouseMove)
+          ref.current?.removeEventListener("mousemove", handleMouseMove)
         };
       }
     });

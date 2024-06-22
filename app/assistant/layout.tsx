@@ -11,9 +11,9 @@ export default function RootLayout({
 >) {
   return (
 
-      <div style={{flexDirection:"column",display:"flex",height:"100%"}}>
-        <main style={{display:"flex",flexDirection:"row",width:"100%",height:"100%"}} >
-            <SideBar />
+      <div style={{flexDirection:"row",display:"flex",height:"100%",width:"100%"}}>
+          <SideBar />
+        <main style={{display:"flex",flexDirection:"row",width:"100%",minHeight:"100%"}} >
             {children}
         </main>
       </div>

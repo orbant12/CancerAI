@@ -237,6 +237,7 @@
     background-color: white;
     border-radius: 10px;
     border:1px solid magenta;
+    margin-top: 20px;
 }
 
 .tool-btn:hover{
@@ -252,29 +253,34 @@
 }
 
 .image-edit:hover{
-    cursor:zoom-in;
+    cursor:cell;
 }
 
 .element {
-    position: absolute;
     pointer-events: none;
-    bottom: 100%;
-    transform: translateY(-50%) translateX(-50%);
-    left: 50%;
     border-width: 8px;
     border-color: #5a67d8; /* This is the approximate hex code for indigo-500 */
     border-style: solid;
-    width: 15rem; /* Equivalent to w-32 */
-    height: 15rem; /* Equivalent to h-32 */
+    width: 350px; /* Equivalent to w-32 */
+    height: 350px; /* Equivalent to h-32 */
     z-index: 10;
     background-color: #edf2f7; /* This is the approximate hex code for bg-gray-200 */
+    -webkit-user-drag: auto;
+    cursor: grab;
+  }
+
+  .zoomerBox{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    margin: 10px;
+    cursor: grab;
+    transition: transform 0.1s ease;
   }
   
   @media (min-width: 768px) {
     .element {
-      transform: translateY(0) translateX(0);
-      bottom: 4.2rem; /* Equivalent to md:bottom-16 */
-      right: -4rem; /* Equivalent to md:-left-16 */
     }
   }
 
@@ -284,4 +290,22 @@
     border-width: 1px; /* Assuming you want a 1px border as in border-sky-500 */
     border-color: #ff0000; /* This is the approximate hex code for border-sky-500 */
     border-style: solid;
+    
   }
+
+.image-editor{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.editor-stage{
+    display: flex;
+    flex-direction: column;
+    
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
