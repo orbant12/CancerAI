@@ -82,6 +82,7 @@ export default function SessionPage(){
                 if (response === true) {
                     const updatedChatState = await messageStateChange(chatState)
                     setChatLog(updatedChatState);
+                    scrollToBottom()
                 } else {
                     console.error('Failed to update chat log');
                 }
@@ -119,7 +120,7 @@ export default function SessionPage(){
 
     useEffect(() => {
         scrollToBottom()
-    }, [chatLog,isChatOpen]);
+    }, [isChatOpen]);
 
     return(
         <div style={{width:"100%",flexDirection:"column",padding:0,display:"flex",minHeight:"130%"}}>
@@ -214,7 +215,6 @@ const InspectionComponent = () => {
     return(
         <div style={{display:"flex",flexDirection:"column",width:"100%",marginTop:10,alignItems:"center"}}>
         <div style={{display:"flex",flexDirection:"row",width:"100%",alignItems:"center",justifyContent:"space-between",padding:30}}>
-          
         </div>
             <div className='editor-stage'>
             {activeZoom != "" &&
@@ -342,6 +342,7 @@ const ChatMessage = ({ message, me, end, isLast,profileUrl }:{message:{user:stri
     return(
     <div  
     style={{
+        display:"flex",
         flexDirection: "row",
         width: "60%",
         borderWidth: 0,
@@ -363,7 +364,7 @@ const ChatMessage = ({ message, me, end, isLast,profileUrl }:{message:{user:stri
                 style={{width:50,height:50,borderRadius:10,marginRight:5,overflowY:"hidden"}}
             />
             :
-            <div style={{width:40,height:40,marginRight:5}} />
+            <div style={{width:55}} />
             )
         }
         {message.user == end ? (
@@ -393,7 +394,10 @@ const ChatMessage = ({ message, me, end, isLast,profileUrl }:{message:{user:stri
             <div style={{
                 alignItems:"start",
                 padding:"8px 10px", 
-                backgroundColor:"rgba(0,0,255,0.4)",
+                display:"flex",
+                flexDirection:"column",
+                justifyContent:"center",
+                backgroundColor:"rgba(0,0,255,0.2)",
                 borderRadius:10,
                 borderTopRightRadius:0,
                 borderBottomRightRadius:2,
