@@ -20,10 +20,7 @@
     --primary-color: #f49ffb;
 }
 
-body{
-  height: 100vh;
-  background-color: var(--body-color);
-}
+
 
 body.dark{
     --body-color: #18191A;

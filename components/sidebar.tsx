@@ -6,12 +6,14 @@ import { SlLogout } from "react-icons/sl";
 import { MdAbc } from 'react-icons/md';
 import { SlArrowRight,SlArrowLeft,SlEnvolopeLetter,SlBubble } from "react-icons/sl";
 import { signOut } from 'firebase/auth';
+import "../app/assistant/assistant.css"
 import { auth } from '@/services/firebase';
+import { useSidebar } from '@/Context/SidebarContext';
 
-const SideBar = () => {
+const SideBar = ({setPassActive}:{setPassActive:(active: boolean) => void}) => {
   const navRef = useRef<HTMLElement | null>(null);
 
-  const [ active, setActive] = useState(false)
+  const [ active, setActive ] = useState(false);
 
   const handleLogOut = () => {
     signOut(auth)
@@ -25,6 +27,7 @@ const SideBar = () => {
         active={active}
         setActive={setActive}
         handleLogOut={handleLogOut}
+        setPassActive={setPassActive}
         />
   );
 };
@@ -36,22 +39,24 @@ const LoggedOn_Navbar = ({
   navRef,
   active,
   setActive,
-  handleLogOut
+  handleLogOut,
+  setPassActive
 }:{
   navRef: Ref<any>;
   active: boolean;
   setActive: (active: boolean) => void;
   handleLogOut:() => void;
+  setPassActive: (active: boolean) => void
 
 }) => {
   return(
     <>
     {active ? (
-    <nav ref={navRef} style={{width:250,height:"100%",flexDirection:"column",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <nav ref={navRef} className='sidebar active'>
       <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%",alignItems:"center"}}>
         <span style={{width:"100%",flexDirection:"column",display:"flex",justifyContent:"center"}}>
           <a style={{textDecoration:"none",fontWeight:500,color:"black",fontSize:20,textAlign:"center"}} href="/">Pocket Protect</a>
-          <div onClick={() => setActive(!active)} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:130,flexDirection:"column",display:"flex"}}>
+          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:130,flexDirection:"column",display:"flex"}}>
             <SlArrowLeft size={13} color='white' />
           </div>
         </span>
@@ -80,8 +85,8 @@ const LoggedOn_Navbar = ({
       </div>
     </nav>
     ) : (
-      <nav ref={navRef} style={{width:100,height:"100%",flexDirection:"column",display:"flex",alignItems:"center",justifyContent:"space-between",zIndex:10,boxShadow:"0px 0px 5px 1px black"}}>
-          <div onClick={() => setActive(!active)} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:72,flexDirection:"column",display:"flex"}}>
+      <nav ref={navRef} className='sidebar'>
+          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:72,flexDirection:"column",display:"flex"}}>
             <SlArrowRight size={13} color='white' />
           </div>
       <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%"}}>

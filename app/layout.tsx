@@ -21,12 +21,12 @@ export default function RootLayout({
 >) {
   return (
     <html lang="en">
-      <body className={inter.className} style={{display:"flex",flexDirection:"column",width:"100%"}}>
+      <body>
       
       <UserAuthContextProvider>
         <NavBar  />
         {/*Body*/}
-        <main style={{width:"100%",minHeight:"100%"}} >
+        <main style={{width:"100%",display:"flex",flexDirection:"column",height:"100%"}} >
           {children}
         </main>
         </UserAuthContextProvider>

@@ -58,7 +58,7 @@ const Mole_Check_Stages = [
     }
 ]
     return(
-        <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
+        <div style={{display:"flex",flexDirection:"column",width:"100%",height:"100%"}}>
             
             <div style={{display:"flex",flexDirection:"row",padding:50,width:"100%",justifyContent:"space-between",alignItems:"center"}}>
                 <h2>Your Active Sessions</h2>
@@ -78,7 +78,7 @@ export default SessionPanel;
 
 const SessionBar = ({props}:{props: SessionType}) => {
     return(
-        <div style={{width:"60%",border:"2px solid black",padding:15,borderRadius:10}}>
+        <div style={{width:"60%",border:"2px solid black",padding:15,borderRadius:10,marginBottom:80,overflow:"hidden",minHeight:340,display:"flex",flexDirection:"column"}}>
             <div style={{display:"flex",flexDirection:"row",width:"100%",justifyContent:"space-between"}}>
                 <div style={{flexDirection:"row",display:"flex"}}>
                     <img src={props.clientData?.profileUrl} style={{height:60,width:60,borderWidth:"5px solid black",borderRadius:10}} />
@@ -115,9 +115,7 @@ const SessionBar = ({props}:{props: SessionType}) => {
                 />
             </div>
             <Link className="openBtn" href={`/assistant/sessions/${props.id}`}>
-                
                     <h4 style={{color:"white",fontWeight:"500"}}>Open</h4>
-                
             </Link>
             
         </div>

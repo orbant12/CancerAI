@@ -1,4 +1,4 @@
-import { collection, doc,getDocs, getDoc } from "firebase/firestore";
+import { collection, doc,getDocs, getDoc,updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 interface FetchingProps{
@@ -54,4 +54,53 @@ export const fetchSessions_All = async ({ userId }:FetchingProps) => {
         console.log(err)
         return [{err}]
     }
+}
+
+export const fetchSession_Single = async ({sessionId,userId} : {sessionId:string,userId:string}) =>{
+    try{
+        const ref = doc(db, "assistants",userId,"Sessions",sessionId)
+        const snapshot = await getDoc(ref)
+        if (snapshot.exists()) {
+            return snapshot.data();
+        } else {
+            console.error(`Assistant with ID ${userId} does not exist.`);
+            return {};
+        }
+    } catch {
+        return {}
+    }
+}
+
+export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:string}) => {
+    try{
+        const ref = doc(db,"users",clientId,"Assist_Panel",sessionId)
+        const snapshot = await getDoc(ref)
+        if (snapshot.exists()) {
+            return snapshot.data().chat;
+        } else {
+            return [];
+        }
+    } catch {
+        return []
+    }
+}
+
+
+export const realTimeUpdateChat = async ({
+    userId,
+    sessionId,
+    chat
+}:{
+    userId:string;
+    sessionId:string;
+    chat: any[];
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Assist_Panel", sessionId) 
+        await updateDoc(ref,{chat:[...chat]})
+        return true
+     } catch(Err) {
+        console.log(Err)
+        return Err
+     }
 }
