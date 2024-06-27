@@ -1,5 +1,6 @@
 import { collection, doc,getDocs, getDoc,updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
+import { SessionType } from "@/utils/types";
 
 interface FetchingProps{
     userId: string;
@@ -56,18 +57,18 @@ export const fetchSessions_All = async ({ userId }:FetchingProps) => {
     }
 }
 
-export const fetchSession_Single = async ({sessionId,userId} : {sessionId:string,userId:string}) =>{
+export const fetchSession_Single = async ({sessionId,userId} : {sessionId:string,userId:string}):Promise <SessionType | null> => {
     try{
         const ref = doc(db, "assistants",userId,"Sessions",sessionId)
         const snapshot = await getDoc(ref)
         if (snapshot.exists()) {
-            return snapshot.data();
+            return snapshot.data() as SessionType;
         } else {
             console.error(`Assistant with ID ${userId} does not exist.`);
-            return {};
+            return null;
         }
     } catch {
-        return {}
+        return null
     }
 }
 
@@ -103,4 +104,19 @@ export const realTimeUpdateChat = async ({
         console.log(Err)
         return Err
      }
+}
+
+export const fetchRequests = async ({userId}:{userId:string}) => {
+    try{
+        const ref = collection(db,"assistants",userId,"Requests")
+        const snapshot = await getDocs(ref)
+        let requests: any[] = [];
+        snapshot.forEach((doc) => {
+            requests.push(doc.data());
+        });
+        return requests;
+    } catch(err) {
+        console.log(err)
+        return [{err}]
+    }
 }

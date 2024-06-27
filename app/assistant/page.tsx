@@ -60,7 +60,7 @@ const Assistant_Dashboard: FC = () => {
         {/* ROW 1 */}
         <div className="services-row">
           {/* Box 1 */}
-          <Dashboard_Item path="/assistant/sessions" icon={ <SlEnvolopeLetter />} desc={"Assess your risk for cardiovascular diseases"} title={"Job Requests"} />
+          <Dashboard_Item path="/assistant/requests" icon={ <SlEnvolopeLetter />} desc={"Assess your risk for cardiovascular diseases"} title={"Job Requests"} />
           {/* Box 2 */}
           <Dashboard_Item path="/assistant/sessions" icon={ <SlBubble />} desc={"Assess your risk for cardiovascular diseases"} title={"Active Sessions"} />
           {/* Box 3 */}
