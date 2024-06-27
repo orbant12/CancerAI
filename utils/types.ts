@@ -55,8 +55,9 @@ export type SessionType = {
     id:string;
     purchase:{
         type:Product_Types;
-        item:any[];
-    }
+        item:SpotData[];
+    },
+    created_at:Timestamp | Date;
 }
 
 

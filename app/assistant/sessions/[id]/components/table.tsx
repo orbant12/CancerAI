@@ -1,3 +1,5 @@
+
+
 import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -22,6 +24,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
+import { SpotData } from '@/utils/types';
 
 
 type RequestTableType = {
@@ -29,44 +32,12 @@ type RequestTableType = {
     session_id: string;
     date: string;
     order: string;
+    open:() => React.ReactNode;
 }
 
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key,
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
-) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 interface HeadCell {
     disablePadding: boolean;
@@ -78,13 +49,13 @@ interface HeadCell {
 const headCells: readonly HeadCell[] = [
     {
         id: 'session_id',
-        numeric: false,
+        numeric: true,
         disablePadding: true,
         label: 'Session ID',
     },
     {
         id: 'date',
-        numeric: true,
+        numeric: false,
         disablePadding: false,
         label: 'Requested at',
     },
@@ -94,6 +65,12 @@ const headCells: readonly HeadCell[] = [
         disablePadding: false,
         label: 'Order',
     },
+    {
+      id: 'open',
+      numeric: false,
+      disablePadding: false,
+      label: 'Open',
+  },
 ];
 
 interface EnhancedTableProps {
@@ -106,13 +83,9 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+  const { onSelectAllClick, numSelected, rowCount } =
     props;
-  const createSortHandler =
-    (property: keyof RequestTableType) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
-
+ 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
           backgroundColor: theme.palette.common.black,
@@ -135,8 +108,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 return (
 <TableHead>
-    <TableRow>
-        <StyledTableCell  padding="checkbox">
+    <StyledTableRow>
+        <StyledTableCell padding="checkbox">
         <Checkbox
             color="success"
             indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -150,25 +123,13 @@ return (
         {headCells.map((headCell) => (
         <StyledTableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={headCell.numeric ? 'left' : 'right'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
         >
-            <TableSortLabel
-            active={orderBy === headCell.id}
-            direction={orderBy === headCell.id ? order : 'asc'}
-            onClick={createSortHandler(headCell.id)}
-            >
             {headCell.label}
-            {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-            ) : null}
-            </TableSortLabel>
         </StyledTableCell>
         ))}
-    </TableRow>
+    </StyledTableRow>
 </TableHead>
 );
 }
@@ -239,9 +200,6 @@ export default function EnhancedTable({
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof RequestTableType>('date');
   const [selected, setSelected] = React.useState<readonly any[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -300,29 +258,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
-      ),
-    [order, orderBy, page, rowsPerPage],
-  );
 
   return (
     <Box sx={{ width: '100%',height:"100%" }}>
@@ -343,12 +281,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
               rowCount={rows.length}
             />
             <TableBody>
-              {visibleRows.map((row, index) => {
+              {rows.map((row, index) => {
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow
+                  <StyledTableRow
                     hover
                     onClick={(event) => handleClick(event, row.id)}
                     role="checkbox"
@@ -376,19 +314,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
                       {row.session_id}
                     </StyledTableCell>
                     <StyledTableCell align="right">{row.date}</StyledTableCell>
-                    <StyledTableCell align="right">{row.order.length}</StyledTableCell>
-                  </TableRow>
+                    <StyledTableCell align="right">{row.order}</StyledTableCell>
+                    <StyledTableCell width={100}  align="right">{row.open && row.open()}</StyledTableCell>
+                  </StyledTableRow>
                 );
               })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <StyledTableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
