@@ -2,18 +2,37 @@ import React, { useRef, useState } from 'react';
 import imageKep from "../../../../../public/ISIC_0477738.jpg"
 import {SlMagnifier, SlMagnifierAdd } from "react-icons/sl";
 import { useMouseOverZoom } from "../hook"
+import { SpotData } from '@/utils/types';
 
 
-export const MoleInspectionPanel = () => {
+export const MoleInspectionPanel = ({
+    selectedOrderForReview
+}:{
+    selectedOrderForReview:SpotData | null
+}) => {
     return(
+        <>
+        {selectedOrderForReview ?
         <div>
-            <InspectionComponent />
+            <InspectionComponent 
+                data={selectedOrderForReview}
+            />
         </div>
+        :
+        <div style={{width:"100%",height:"100%",flexDirection:"column",display:"flex",justifyContent:"center",alignItems:"center"}}>
+            <h4>You need to select an order first !</h4>
+        </div>
+        }
+        </>
     )
 }
 
 
-const InspectionComponent = () => {
+const InspectionComponent = ({
+    data
+}:{
+    data:SpotData
+}) => {
 
     const source = useRef<HTMLImageElement>(null); 
     const target = useRef<HTMLCanvasElement>(null); 
@@ -75,6 +94,7 @@ const InspectionComponent = () => {
                 source={source}
                 setActiveZoom={setActiveZoom}
                 cursor={cursor}
+                data={data}
             />
             </div>
         </div>
@@ -85,16 +105,18 @@ function ImageEditor({
     activeZoom,
     source,
     setActiveZoom,
-    cursor
+    cursor,
+    data
 }:{
     activeZoom: "" | "1x" | "2x" | string;
     source: any,
     setActiveZoom: (activeZoom:"" | "1x" | "2x") => void;
     cursor:any;
+    data:SpotData
 }) {
     return(
         <div className='image-editor'>
-            <img src={imageKep.src} className='image-edit' width={500} ref={source} style={{width:"500px", height:"500px", border:"1px solid black"}} />
+            <img src={data.melanomaPictureUrl} className='image-edit' width={500} ref={source} style={{width:"500px", height:"500px", border:"1px solid black"}} />
             {/* <div ref={cursor} className="cursor-element" /> */}
             
             <div style={{width:80,display:"flex",flexDirection:"column",background:"black",padding:20,height:500, borderTopRightRadius:30,borderBottomRightRadius:30,alignItems:"center"}}>

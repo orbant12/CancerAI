@@ -1,4 +1,4 @@
-import { collection, doc,getDocs, getDoc,updateDoc } from "firebase/firestore";
+import { collection, doc,getDocs, getDoc,updateDoc,deleteDoc,setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { SessionType } from "@/utils/types";
 
@@ -118,5 +118,20 @@ export const fetchRequests = async ({userId}:{userId:string}) => {
     } catch(err) {
         console.log(err)
         return [{err}]
+    }
+}
+
+export const handleRequestAccept = async ({sessionData}:{sessionData:SessionType}) => {
+    try{
+        const ref = doc(db,"assistants",sessionData.assistantData.id,"Sessions",sessionData.id)
+        const reqRef = doc(db,"assistants",sessionData.assistantData.id,"Requests",sessionData.id)
+        await deleteDoc(reqRef)
+        await setDoc(ref,sessionData)
+        return true
+    } catch(err) {
+        const reqRef = doc(db,"assistants",sessionData.assistantData.id,"Requests",sessionData.id)
+        await setDoc(reqRef,sessionData)
+        console.log(err)
+        return false
     }
 }

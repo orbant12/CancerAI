@@ -86,13 +86,12 @@ const LoggedOn_Navbar = ({
     </nav>
     ) : (
       <nav ref={navRef} className='sidebar'>
-          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:72,flexDirection:"column",display:"flex"}}>
+      <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%"}}>
+        <span style={{width:"100%",padding:0,fontSize:20,fontWeight:500,color:"black",textDecoration:"none",flexDirection:"column",display:"flex"}}>
+          <a style={{textDecoration:"none",fontWeight:500,color:"black"}} href="/">Logo</a>
+          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",borderRadius:5,padding:9,flexDirection:"column",display:"flex",width:"80%",justifyContent:"center",alignItems:"center"}}>
             <SlArrowRight size={13} color='white' />
           </div>
-      <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%"}}>
-        <span style={{width:"100%",padding:0,fontSize:20,fontWeight:500,color:"black",textDecoration:"none",flexDirection:"row",display:"flex"}}>
-          <a style={{textDecoration:"none",fontWeight:500,color:"black"}} href="/">Logo</a>
-      
         </span>
 
         <div style={{flexDirection:"column",width:"100%",display:"flex",alignItems:"center"}}>

@@ -41,7 +41,7 @@ export function useMouseOverZoom(
           ctx.drawImage(
             source.current,
             left * imageRatio,
-            top * imageRatio + 100,
+            top * imageRatio ,
             width * imageRatio,
             height * imageRatio,
             0,

@@ -28,7 +28,7 @@ export const ChatModal = ({
     return(
         <>
         {!visible ? 
-            <div onClick={() => setIsChatOpen(!visible)} style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",background:"black",padding:15,borderRadius:100,position:"absolute",bottom:20,right:20,boxShadow:"0px 1px 10px 1px black",cursor:"pointer"}}>
+            <div onClick={() => setIsChatOpen(!visible)} style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",background:"black",padding:15,borderRadius:100,position:"fixed",bottom:20,right:20,boxShadow:"0px 1px 10px 1px black",cursor:"pointer"}}>
                 <SlBubble color='white' size={25} />
             </div>
             :
@@ -71,7 +71,7 @@ export const ChatSheet = ({
 }) => {
 
     return(
-        <div style={{height:"100%",width:"100%",backgroundColor:"rgba(0,0,0,0.9)",position:"absolute",zIndex:100,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+        <div style={{height:"100%",width:"100%",backgroundColor:"rgba(0,0,0,0.9)",position:"fixed",zIndex:100,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
                     <div style={{width:"70%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:10,backgroundColor:"black",position:"absolute",zIndex:100,marginRight:180,top:10,borderTopRightRadius:30,borderTopLeftRadius:30}}>
                     <h5 style={{color:"white"}}>Chat</h5>
                     <SlClose color='red' size={25} style={{position:"absolute",right:10,cursor:"pointer"}} onClick={() => handleClose()} />

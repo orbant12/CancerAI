@@ -9,10 +9,13 @@ import imageKep from "../../../../public/ISIC_0477738.jpg"
 import { useAuth } from '@/Context/UserAuthContext';
 import { fetchSession_Single,fetchChat,realTimeUpdateChat } from '@/services/api';
 import { messageStateChange } from '@/utils/assist/messageStateChanger';
-import { SessionType } from '@/utils/types';
+import { SessionType, SpotData } from '@/utils/types';
 import { MoleInspectionPanel } from './components/moleInspection';
 import { ChatModal } from './components/chat';
 import { OrdersPanel } from './components/oredersPanel';
+import { DataPreprocessForTable } from '@/utils/assist/dataPreprocessForTable';
+import { RequestTableType } from './components/table';
+import { ReportWriting } from './components/moleReportWriting';
 
 
 
@@ -35,6 +38,8 @@ export default function SessionPage(){
     const [ chatLog, setChatLog] = useState<ChatLogType[]>([])
     const [ inputValue, setInputValue] = useState("")
     const scrollableDivRef = useRef<HTMLDivElement>(null);
+    const [ orders, setOrders ] = useState<RequestTableType[]>([])
+    const [ selectedOrderForReview , setSelectedOrderForReview ] = useState<SpotData | null>(null)
 
     const fetchSessionChat = async (clientId:string) => {
         const response = await fetchChat({
@@ -54,6 +59,22 @@ export default function SessionPage(){
         if (response != null) {
             setSessionData(response)
             fetchSessionChat(response.clientData.id)
+            const data_preprocess = response.purchase.item.map((item:SpotData,index:number) => {
+                return {
+                    id: index,
+                    melanomaId: item.melanomaId,
+                    date:  "item.created_at",
+                    ai_risk: `${item.risk} Chance`,
+                    finished: false,
+                    moleImage: item.melanomaPictureUrl,
+                    open:() => 
+                        <div onClick={() =>  {setSelectedOrderForReview(item);setSelectedStage(1)}} style={{width:200,height:40,padding:10,borderRadius:10,background:"black",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",alignSelf:"flex-end",marginLeft:0}}>
+                            <h5 style={{color:"white"}}>Start Diagnosis</h5>
+                        </div>
+                    
+                }
+            })
+            setOrders(data_preprocess)
         }
     }
     }
@@ -134,18 +155,19 @@ export default function SessionPage(){
                 <Bubble 
                     title='Mole Inspection'
                     selectedStage={selectedStage}
-                    setSelectedStage={setSelectedStage}
+                    setSelectedStage={(e) => selectedOrderForReview ? setSelectedStage(e) : alert("You need to select an order first !")}
                     index={1}
                 />
                 <Bubble 
-                    title='Closing Session'
+                    title='Report Creation'
                     selectedStage={selectedStage}
-                    setSelectedStage={setSelectedStage}
+                    setSelectedStage={(e) => selectedOrderForReview ? setSelectedStage(e) : alert("You need to select an order first !")}
                     index={2}
                 />
             </div>
-            {selectedStage == 0 && <OrdersPanel  orders={sessionData?.purchase.item} />}
-            {selectedStage == 1 &&  <MoleInspectionPanel />}            
+            {selectedStage == 0 && <OrdersPanel orders={orders} />}
+            {selectedStage == 1 &&  <MoleInspectionPanel selectedOrderForReview={selectedOrderForReview} />}            
+            {selectedStage == 2 &&  <ReportWriting selectedOrderForReview={selectedOrderForReview} />}      
             <ChatModal 
                 visible={isChatOpen}
                 sessionData={sessionData}

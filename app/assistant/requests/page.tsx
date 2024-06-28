@@ -1,10 +1,10 @@
 "use client"
 
 import { useAuth } from '@/Context/UserAuthContext';
-import { fetchRequests } from '@/services/api';
+import { fetchRequests, handleRequestAccept } from '@/services/api';
 import { Gender, SessionType, SkinType, Slug, SpotData } from "@/utils/types";
 import * as React from 'react';
-import EnhancedTable from '../sessions/[id]/components/table';
+import EnhancedTable, { HeadCell } from '../sessions/[id]/components/table';
 import { SlClose } from "react-icons/sl";
 
 
@@ -13,6 +13,8 @@ type RequestTableType = {
     session_id: string;
     date: string;
     order: string;
+    open:() => React.ReactNode;
+    finished?: boolean;
 }
 
 type OrderData = {
@@ -31,7 +33,35 @@ const RequestPage = () => {
     const { currentuser } = useAuth()
 
     const [rows, setRows] = React.useState<RequestTableType[]>([])
+    const [rawData, setRawData] = React.useState<SessionType[]>([])
     const [selectedOrderForReview, setSelectedOrderForReview] = React.useState<SpotData[] | null>(null)
+
+    const headCells: readonly HeadCell[] = [
+        {
+            id: 'session_id',
+            numeric: true,
+            disablePadding: true,
+            label: 'Session ID',
+        },
+        {
+            id: 'date',
+            numeric: false,
+            disablePadding: false,
+            label: 'Requested at',
+        },
+        {
+            id: 'order',
+            numeric: false,
+            disablePadding: false,
+            label: 'Order',
+        },
+        {
+          id: 'open',
+          numeric: false,
+          disablePadding: false,
+          label: 'Open',
+      },
+    ];
 
     const fetchCurrentRequests = async () => {
         if (!currentuser) return
@@ -45,125 +75,25 @@ const RequestPage = () => {
                 date:  "item.created_at",
                 order: `${item.purchase.item.length} Mole Check`,
                 data: item.purchase.item,
+                finished: false,
                 open:() => 
-                    <div onClick={() => {setSelectedOrderForReview(item.purchase.item)}} style={{width:100,height:30,padding:10,borderRadius:10,background:"black",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",alignSelf:"flex-end",marginLeft:100}}>
-                        <h6 style={{color:"white"}}>See Moles</h6>
+                    <div onClick={() => {setSelectedOrderForReview(item.purchase.item)}} style={{width:100,height:40,padding:10,borderRadius:10,background:"black",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",alignSelf:"flex-end",marginLeft:100}}>
+                        <h5 style={{color:"white"}}>See Moles</h5>
                     </div>
                 
             }
         })
-        const fake_datas = [
-            {
-                id: 2,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 3,
-                session_id: "session_33",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 4,
-                session_id: "session_321323",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 5,
-                session_id: "session_323",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 6,
-                session_id: "session_313",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 7,
-                session_id: "session_3213423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 8,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 9,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 10,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 11,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 12,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 13,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 14,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 15,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 16,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 17,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 18,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-            {
-                id: 19,
-                session_id: "session_321312423",
-                date: "2021-12-12",
-                order: "2 Mole Check",
-            },
-        ]
-        setRows([...data_preprocess,...fake_datas])
+        setRawData(response)
+        setRows([...data_preprocess])
+    }
 
+    const handleAccept = async (selectedArray:number[]) => {
+        selectedArray.map((item) => {
+            const sess = rawData[item]
+            handleRequestAccept({
+                sessionData: sess,
+            })
+        })
     }
 
     React.useEffect(() => {
@@ -176,6 +106,10 @@ const RequestPage = () => {
         <div style={{width:"100%",height:"100vh",display:"flex",flexDirection:"column"}}>
             <EnhancedTable 
                 rows={rows}
+                handleAccept={handleAccept}
+                headCells={headCells}
+                type='req'
+                tableTitle='Your Order Requests'
             />
             <Product_Showcase_Modal 
                 visible={selectedOrderForReview != null}
