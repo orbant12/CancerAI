@@ -15,7 +15,7 @@ import { ChatModal } from './components/chat';
 import { OrdersPanel } from './components/oredersPanel';
 import { DataPreprocessForTable } from '@/utils/assist/dataPreprocessForTable';
 import { RequestTableType } from './components/table';
-import { ReportWriting } from './components/moleReportWriting';
+import { Answers, ReportWriting } from './components/moleReportWriting';
 
 
 
@@ -26,6 +26,30 @@ type ChatLogType = {
     date: Date
     inline_answer:boolean
 }
+
+export interface Answer {
+    answer: string;
+    description: string;
+}
+
+export interface Result {
+    answer: 0 | 1 | 2 | 3 | 4 | 5;
+    description: string;
+}
+
+export interface MoleAnswers {
+    asymmetry: Answer;
+    border: Answer;
+    color: Answer;
+    diameter: Answer;
+    evolution: Answer;
+}
+
+export interface ResultAnswers {
+    mole_malignant_chance: Result;
+    mole_evolution_chance: Result;
+}
+
 
 
 export default function SessionPage(){
@@ -40,6 +64,8 @@ export default function SessionPage(){
     const scrollableDivRef = useRef<HTMLDivElement>(null);
     const [ orders, setOrders ] = useState<RequestTableType[]>([])
     const [ selectedOrderForReview , setSelectedOrderForReview ] = useState<SpotData | null>(null)
+    const [answerSheetForMoles, setAnswerSheetForMoles] = useState<Record<string, MoleAnswers>>({});
+    const [resultSheetForMoles, setResultSheetForMole] = useState<Record<string, ResultAnswers>>({});
 
     const fetchSessionChat = async (clientId:string) => {
         const response = await fetchChat({
@@ -58,13 +84,55 @@ export default function SessionPage(){
         })
         if (response != null) {
             setSessionData(response)
+            const stateObjectForAnswers = response.purchase.item.reduce((acc: Record<string, any>, item: SpotData) => {
+                acc[item.melanomaId] = {
+                    asymmetry: {
+                        answer: "",
+                        description: ""
+                    },
+                    border: {
+                        answer: "",
+                        description: ""
+                    },
+                    color: {
+                        answer: "",
+                        description: ""
+                    },
+                    diameter: {
+                        answer: "",
+                        description: ""
+                    },
+                    evolution: {
+                        answer: "",
+                        description: ""
+                    }
+                };
+                return acc;
+            }, {});
+            setAnswerSheetForMoles(stateObjectForAnswers)
+
+            const stateObjectForResults = response.purchase.item.reduce((acc: Record<string, any>, item: SpotData) => {
+                acc[item.melanomaId] = {
+                    mole_malignant_chance: {
+                        answer: 0,
+                        description: ""
+                    },
+                    mole_evolution_chance: {
+                        answer: 0,
+                        description: ""
+                    },
+                };
+                return acc;
+            }, {});
+            setResultSheetForMole(stateObjectForResults)
+            
             fetchSessionChat(response.clientData.id)
             const data_preprocess = response.purchase.item.map((item:SpotData,index:number) => {
                 return {
                     id: index,
                     melanomaId: item.melanomaId,
                     date:  "item.created_at",
-                    ai_risk: `${item.risk} Chance`,
+                    ai_risk: `${item.risk != null ? item.risk + ' Chance' : "Not analised" }`,
                     finished: false,
                     moleImage: item.melanomaPictureUrl,
                     open:() => 
@@ -167,7 +235,15 @@ export default function SessionPage(){
             </div>
             {selectedStage == 0 && <OrdersPanel orders={orders} />}
             {selectedStage == 1 &&  <MoleInspectionPanel selectedOrderForReview={selectedOrderForReview} />}            
-            {selectedStage == 2 &&  <ReportWriting selectedOrderForReview={selectedOrderForReview} />}      
+            {selectedStage == 2 &&  
+            <ReportWriting 
+                selectedOrderForReview={selectedOrderForReview} 
+                sessionData={sessionData} 
+                answerSheetForMole={answerSheetForMoles} 
+                setAnswerSheetForMoles={setAnswerSheetForMoles}
+                resultSheetForMole={resultSheetForMoles}
+                setResultSheetForMole={setResultSheetForMole}
+            />}      
             <ChatModal 
                 visible={isChatOpen}
                 sessionData={sessionData}

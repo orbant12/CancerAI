@@ -48,7 +48,7 @@ export type SessionType = {
         id:string;
         profileUrl:string;
         email:string;
-        birth_date:Date | Timestamp;
+        birth_date:Timestamp;
         gender:Gender;
     };
     chat:{date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[];
@@ -129,7 +129,7 @@ export type SpotArrayData = {
 
 // Special Data structure types
 
-type Timestamp = {
+export type Timestamp = {
     seconds: number,
     nanoseconds: number
 }
