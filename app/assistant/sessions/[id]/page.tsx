@@ -48,6 +48,7 @@ export interface MoleAnswers {
 export interface ResultAnswers {
     mole_malignant_chance: Result;
     mole_evolution_chance: Result;
+    mole_advice: string;
 }
 
 
@@ -121,6 +122,7 @@ export default function SessionPage(){
                         answer: 0,
                         description: ""
                     },
+                    mole_advice: ""
                 };
                 return acc;
             }, {});

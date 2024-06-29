@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
                         </View>
                         {results?.[data.melanomaId].mole_evolution_chance.description != "" && <Text style={{fontSize:9,marginTop:7,paddingLeft:8,borderLeftWidth:1,marginLeft:5}}>{results?.[data.melanomaId].mole_evolution_chance.description}</Text>}
                         <Text style={{fontSize:11,marginTop:30}}>• Advice:</Text>
-                        {analasisData[data.melanomaId].border.description != "" && <Text style={{fontSize:9,marginTop:7,paddingLeft:8,borderLeftWidth:1,marginLeft:5}}>{analasisData[data.melanomaId].border.description}</Text>}
+                        {results?.[data.melanomaId].mole_advice != "" && <Text style={{fontSize:9,marginTop:7,paddingLeft:8,borderLeftWidth:1,marginLeft:5}}>{results?.[data.melanomaId].mole_advice}</Text>}
                     </View>
                 </View>
             ))}
