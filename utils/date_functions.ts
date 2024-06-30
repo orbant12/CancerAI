@@ -29,3 +29,12 @@ export const timestampBirtDate_Age_Calculator_FromToday = (timestamp: any) => {
 
     return `${age}`
 }
+
+export const timestamp_DaysAgo_Calculator = (timestamp: any) => {
+    //YYYY-MM-DD
+    const date = new Date(timestamp.toDate())
+    const today = new Date()
+    const difference = today.getTime() - date.getTime()
+    const days = difference / (1000 * 3600 * 24)
+    return Math.floor(days)
+}

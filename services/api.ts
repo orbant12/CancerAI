@@ -135,3 +135,17 @@ export const handleRequestAccept = async ({sessionData}:{sessionData:SessionType
         return false
     }
 }
+
+export const fetchMoleHistory = async ({moleId,userId}:{moleId:string,userId:string}) => {
+    try{
+        const ref = collection(db,"users",userId,"Melanoma",moleId,"History")
+        const snapshot = await getDocs(ref)
+        let history: any[] = [];
+        snapshot.forEach((doc) => {
+            history.push(doc.data());
+        })
+        return history;
+    } catch {
+        return null
+    }
+}

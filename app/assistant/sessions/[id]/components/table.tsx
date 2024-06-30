@@ -33,6 +33,7 @@ export type RequestTableType = {
     ai_risk?: string;
     finished?: boolean;
     moleImage?: string;
+    location?: string;
 }
 
 
@@ -98,7 +99,7 @@ return (
         {headCells.map((headCell) => (
         <StyledTableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'right'}
+            align={headCell.numeric ? 'center' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
         >
             {headCell.label}
@@ -158,11 +159,23 @@ function EnhancedTableToolbar({numSelected,handleAccept,tableTitle}:{numSelected
         </div>
         </>
       ) : (
+        <>
+     
         <Tooltip title="Filter list">
           <IconButton>
             <BackIcon handleBack={() => router.back()} />
           </IconButton>
         </Tooltip>
+        {true ?
+        <div className="finishButton" style={{position:"relative",background:"rgba(255,0,0,0.4)",boxShadow:"0px 0px 0px 2px red",opacity:0.8}} >
+            <h4 style={{color:"black",fontWeight:"800"}}>Not Ready</h4>
+        </div>
+        :
+        <div className="finishButton" style={{position:"relative"}} >
+          <h4 style={{color:"black",fontWeight:"800"}}>Finsih</h4>
+        </div>
+        }
+        </>
       )}
     </Toolbar>
   );
@@ -294,20 +307,19 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
                     </>
                     :
                     <>
-                    <StyledTableCell width={100}  align="right">{row.open && row.open()}</StyledTableCell>
+                    <StyledTableCell width={100} style={{width:250,border:"1px solid black"}}  align="center">{row.open && row.open()}</StyledTableCell>
                     <StyledTableCell
                       component="div"
-                      style={{display:"flex",alignItems:"center", flexDirection:"row",marginTop:0,marginLeft:-15}}
+                      style={{display:"flex",alignItems:"center", flexDirection:"row",marginTop:0,marginLeft:0,border:"1px solid black"}}
                       id={labelId}
                       scope="row"
-                      
                     >
                       <img src={row.moleImage} alt="sds" style={{width:70,height:70,marginRight:5,borderRadius:5}} />
                       <h4 style={{marginLeft:10}}>{row.melanomaId}</h4>
                     </StyledTableCell>
-                    <StyledTableCell align="right" >{row.date}</StyledTableCell>
-                    <StyledTableCell style={{minWidth:150}} align="right" >{row.ai_risk}</StyledTableCell>
-                    <StyledTableCell width={150} align="right" style={row.finished ?{backgroundColor:"rgba(0,255,0,0.3)",minWidth:130}:{backgroundColor:"rgba(255,0,0,0.3)",minWidth:150}} ><h5>{!row.finished ? "Not finishhed yet" : "Sent to Client"}</h5></StyledTableCell>
+                    <StyledTableCell style={{fontWeight:"600",border:"1px solid black"}} align="center" >{row.location}</StyledTableCell>
+                    <StyledTableCell style={{fontWeight:"600",minWidth:150,border:"1px solid black"}}align="center" >{row.ai_risk}</StyledTableCell>
+                    <StyledTableCell width={150} align="center" style={row.finished ?{backgroundColor:"rgba(0,255,0,0.3)",minWidth:130,border:"1px solid black"}:{backgroundColor:"rgba(255,0,0,0.3)",minWidth:150,border:"1px solid black"}} ><h5>{!row.finished ? "Not finishhed yet" : "Sent to Client"}</h5></StyledTableCell>
                     </>
                     }
                   </StyledTableRow>

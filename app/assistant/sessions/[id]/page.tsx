@@ -1,11 +1,8 @@
 "use client"
-import { BackIcon } from '../page';
+
 import {useParams,useRouter} from 'next/navigation'
 import "../../assistant.css"
-import { SlBubble } from "react-icons/sl";
 import { useState,useRef, useEffect } from 'react';
-
-import imageKep from "../../../../public/ISIC_0477738.jpg"
 import { useAuth } from '@/Context/UserAuthContext';
 import { fetchSession_Single,fetchChat,realTimeUpdateChat } from '@/services/api';
 import { messageStateChange } from '@/utils/assist/messageStateChanger';
@@ -13,7 +10,7 @@ import { SessionType, SpotData } from '@/utils/types';
 import { MoleInspectionPanel } from './components/moleInspection';
 import { ChatModal } from './components/chat';
 import { OrdersPanel } from './components/oredersPanel';
-import { DataPreprocessForTable } from '@/utils/assist/dataPreprocessForTable';
+
 import { RequestTableType } from './components/table';
 import { Answers, ReportWriting } from './components/moleReportWriting';
 
@@ -51,6 +48,10 @@ export interface ResultAnswers {
     mole_advice: string;
 }
 
+export interface OverallResultAnswers {
+    chance_of_cancer:Result;
+}
+
 
 
 export default function SessionPage(){
@@ -67,6 +68,12 @@ export default function SessionPage(){
     const [ selectedOrderForReview , setSelectedOrderForReview ] = useState<SpotData | null>(null)
     const [answerSheetForMoles, setAnswerSheetForMoles] = useState<Record<string, MoleAnswers>>({});
     const [resultSheetForMoles, setResultSheetForMole] = useState<Record<string, ResultAnswers>>({});
+    const [ overallResultSheerForMoles, setOverallResultSheetForMoles ] = useState<OverallResultAnswers>({
+        chance_of_cancer:{
+            answer:0,
+            description:""
+        }
+    })
 
     const fetchSessionChat = async (clientId:string) => {
         const response = await fetchChat({
@@ -133,7 +140,7 @@ export default function SessionPage(){
                 return {
                     id: index,
                     melanomaId: item.melanomaId,
-                    date:  "item.created_at",
+                    location:  item.melanomaDoc.spot[0].slug,
                     ai_risk: `${item.risk != null ? item.risk + ' Chance' : "Not analised" }`,
                     finished: false,
                     moleImage: item.melanomaPictureUrl,
@@ -236,7 +243,7 @@ export default function SessionPage(){
                 />
             </div>
             {selectedStage == 0 && <OrdersPanel orders={orders} />}
-            {selectedStage == 1 &&  <MoleInspectionPanel selectedOrderForReview={selectedOrderForReview} />}            
+            {selectedStage == 1 &&  <MoleInspectionPanel selectedOrderForReview={selectedOrderForReview} sessionData={sessionData} />}            
             {selectedStage == 2 &&  
             <ReportWriting 
                 selectedOrderForReview={selectedOrderForReview} 
@@ -245,6 +252,8 @@ export default function SessionPage(){
                 setAnswerSheetForMoles={setAnswerSheetForMoles}
                 resultSheetForMole={resultSheetForMoles}
                 setResultSheetForMole={setResultSheetForMole}
+                overallResultSheerForMoles={overallResultSheerForMoles}
+                setOverallResultSheetForMoles={setOverallResultSheetForMoles}
             />}      
             <ChatModal 
                 visible={isChatOpen}

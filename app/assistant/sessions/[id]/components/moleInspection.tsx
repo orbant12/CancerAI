@@ -1,22 +1,89 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import imageKep from "../../../../../public/ISIC_0477738.jpg"
 import {SlMagnifier, SlMagnifierAdd } from "react-icons/sl";
 import { useMouseOverZoom } from "../hook"
-import { SpotData } from '@/utils/types';
+import { SessionType, SpotData } from '@/utils/types';
+import { fetchMoleHistory } from '@/services/api';
+import { timestamp_DaysAgo_Calculator, timestampBirtDate_Age_Calculator_FromToday, timestampToString } from '@/utils/date_functions';
 
 
 export const MoleInspectionPanel = ({
-    selectedOrderForReview
+    selectedOrderForReview,
+    sessionData
 }:{
-    selectedOrderForReview:SpotData | null
+    selectedOrderForReview:SpotData | null;
+    sessionData:SessionType | null;
 }) => {
+
+    const [ selectedMole , setSelectedMole ] = useState<string | undefined>(selectedOrderForReview?.melanomaPictureUrl)
+    const [ selectedMoleHistory , setSelectedMoleHistory ] = useState<SpotData[]>([])
+
+
+    const fetchOlderMoles = async () => {
+        if (selectedOrderForReview && sessionData){
+        const response = await fetchMoleHistory({
+            moleId: selectedOrderForReview.melanomaId,
+            userId: sessionData.clientData.id
+        })
+        if (response) {
+            setSelectedMoleHistory(response)
+        }
+    }
+    }
+
+    useEffect(() => {
+        fetchOlderMoles()
+    },[selectedOrderForReview])
+
     return(
         <>
         {selectedOrderForReview ?
-        <div>
+        <div style={{width:"100%",display:"flex",flexDirection:"column",alignItems:"center",marginTop:20}}>
+            <h1>Inspect • <span style={{opacity:0.4}}>{selectedOrderForReview.melanomaId}</span></h1>
+            <h4 style={{padding:15, background:"rgba(0,255,0,0.3)",borderRadius:10,fontWeight:"500",opacity:0.7,fontSize:14,marginTop:10,maxWidth:"80%"}}>
+                Analyse mole {selectedOrderForReview.melanomaId} with useful tools like zooming and access to older images of the mole for the inspection of evolution!
+            </h4>
             <InspectionComponent 
-                data={selectedOrderForReview}
+                data={selectedMole}
             />
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginTop:20,width:"90%"}}>
+                <h2 style={{alignSelf:"flex-start",margin:20}}>Older Images</h2>
+                        <div style={ selectedMole == selectedOrderForReview.melanomaPictureUrl ? {display:"flex",flexDirection:"row",width:"80%",padding:15,justifyContent:"space-between",alignItems:"center",background:"black",border:"3px solid magenta",borderRadius:10,marginTop:20,marginBottom:20} : {display:"flex",flexDirection:"row",width:"80%",border:"3px solid black",padding:15,justifyContent:"space-between",alignItems:"center",background:"black",borderRadius:10,marginTop:20,marginBottom:20}}>
+                            <img src={selectedOrderForReview.melanomaPictureUrl} alt="" style={{width:150,height:150,borderRadius:10}} />
+                            <div style={{marginLeft:0,color:"white"}}>
+                                <h2>{timestampToString(selectedOrderForReview.created_at)}</h2>
+                                <h4 style={{fontWeight:"400",color:"lightgray"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"white"}}>{timestamp_DaysAgo_Calculator(selectedOrderForReview.created_at)} days</span> ago</h4>
+                            </div>
+                            <div style={{marginRight:50,color:"white"}}>
+                                <h2>Information</h2>
+                                <h4>Bleeding: ?</h4>
+                                <h4>Itching: ?</h4>
+                            </div>
+                            <div onClick={() => setSelectedMole(selectedOrderForReview.melanomaPictureUrl)} style={{display:"flex",flexDirection:"column",background:"white",width:150,height:50,padding:10,alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer"}}>
+                                {selectedMole == selectedOrderForReview.melanomaPictureUrl ? <h3 style={{color:"black"}}>Active</h3> : <h3 style={{color:"black"}}>Show</h3>}
+                            </div>
+                            <h4 style={{position:"absolute",marginBottom:205,color:"magenta"}}>Most Recent ...</h4>
+                        </div>
+                {selectedMoleHistory.length > 0 &&
+                    selectedMoleHistory.map((mole, index) => (
+                        <div key={index} style={{display:"flex",flexDirection:"row",width:"80%",border:"3px solid black",padding:10,justifyContent:"space-between",alignItems:"center",background:"white"}}>
+                            <img src={selectedOrderForReview.melanomaPictureUrl} alt="" style={{width:150,height:150,borderRadius:10}} />
+                            <div style={{marginLeft:0}}>
+                                <h2>{timestampToString(mole.created_at)}</h2>
+                                <h4 style={{fontWeight:"400",color:"lightgray"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"white"}}>{timestamp_DaysAgo_Calculator(mole.created_at)} days</span> ago</h4>
+                            </div>
+                            <div style={{marginRight:50}}>
+                                <h2>Information</h2>
+                                <h4>Bleeding: ?</h4>
+                                <h4>Itching: ?</h4>
+                            </div>
+                            <div onClick={() => setSelectedMole(mole.melanomaPictureUrl)} style={{display:"flex",flexDirection:"column",background:"black",width:150,height:50,padding:10,alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer"}}>
+                                <h3 style={{color:"white"}}>Show</h3>
+                            </div>
+                        </div>
+                    )) 
+                }
+            </div>
         </div>
         :
         <div style={{width:"100%",height:"100%",flexDirection:"column",display:"flex",justifyContent:"center",alignItems:"center"}}>
@@ -31,7 +98,7 @@ export const MoleInspectionPanel = ({
 const InspectionComponent = ({
     data
 }:{
-    data:SpotData
+    data:string | undefined
 }) => {
 
     const source = useRef<HTMLImageElement>(null); 
@@ -112,11 +179,11 @@ function ImageEditor({
     source: any,
     setActiveZoom: (activeZoom:"" | "1x" | "2x") => void;
     cursor:any;
-    data:SpotData
+    data:string | undefined;
 }) {
     return(
         <div className='image-editor'>
-            <img src={data.melanomaPictureUrl} className='image-edit' width={500} ref={source} style={{width:"500px", height:"500px", border:"1px solid black"}} />
+            <img src={data} className='image-edit' width={500} ref={source} style={{width:"500px", height:"500px", border:"1px solid black"}} />
             {/* <div ref={cursor} className="cursor-element" /> */}
             
             <div style={{width:80,display:"flex",flexDirection:"column",background:"black",padding:20,height:500, borderTopRightRadius:30,borderBottomRightRadius:30,alignItems:"center"}}>

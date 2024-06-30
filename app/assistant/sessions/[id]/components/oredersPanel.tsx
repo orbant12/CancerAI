@@ -13,10 +13,10 @@ export const OrdersPanel = ({orders}:{orders:RequestTableType[]}) => {
         label: 'Mole ID',
     },
     {
-        id: 'date',
-        numeric: false,
-        disablePadding: false,
-        label: 'Created at',
+      id: 'location',
+      numeric: false,
+      disablePadding: false,
+      label: 'Location',
     },
     {
         id: 'ai_risk',

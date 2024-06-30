@@ -374,6 +374,58 @@
 }
 
 
+.finishButton{
+    position: absolute;
+    background: lightgreen;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    bottom: 0px;
+    right: 0px;
+    margin-right: 10px;
+    margin-left: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    width: 150px;
+    box-shadow: 0px 0px 10px 0px green;
+}
+
+.finishButton:hover{
+    transform: scale(0.95);
+    cursor: pointer;
+}
+
+.finishButton:active{
+    transform: scale(0.9);
+    transition: 0.1s;
+}
+
+.markFinished{
+    width: 80%;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: lightgreen;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 0px 1px green;
+    cursor: pointer;
+}
+
+.markFinished:hover{
+    transform: scale(0.95);
+}
+
+.markFinished:active{
+    transform: scale(0.9);
+    transition: 0.1s;
+}
+
+
 
 /*
 Responsivemess after 750px for feedbackRow

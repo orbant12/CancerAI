@@ -1,7 +1,7 @@
 import { SessionType, SpotData} from "@/utils/types"
 import { SlCheck,SlClose } from "react-icons/sl";
 import React, { useState } from 'react';
-import { Answer, MoleAnswers, Result, ResultAnswers } from "../page";
+import { Answer, MoleAnswers, OverallResultAnswers, Result, ResultAnswers } from "../page";
 import { PDF_Modal } from "./pdfModal";
 import { timestampBirtDate_Age_Calculator_FromToday, timestampToString } from "@/utils/date_functions";
 
@@ -38,7 +38,9 @@ export const ReportWriting = (
         answerSheetForMole,
         setAnswerSheetForMoles,
         resultSheetForMole,
-        setResultSheetForMole
+        setResultSheetForMole,
+        overallResultSheerForMoles,
+        setOverallResultSheetForMoles 
     }:{
         selectedOrderForReview:SpotData | null;
         sessionData:SessionType | null;
@@ -46,6 +48,8 @@ export const ReportWriting = (
         setAnswerSheetForMoles:(arg:Record<string, MoleAnswers>) => void;
         resultSheetForMole:Record<string, ResultAnswers>;
         setResultSheetForMole:(arg:Record<string, ResultAnswers>) => void;
+        overallResultSheerForMoles:OverallResultAnswers;
+        setOverallResultSheetForMoles:(arg:OverallResultAnswers) => void;
     }) => {
     
 
@@ -76,6 +80,8 @@ export const ReportWriting = (
                     sessionData={sessionData}
                     results={resultSheetForMole}
                     setResults={setResultSheetForMole}
+                    overallResults={overallResultSheerForMoles}
+                    setOverallResults={setOverallResultSheetForMoles}
                 />
             </div>
         :
@@ -94,7 +100,9 @@ const ReportComponent = (
         setAnswer,
         sessionData,
         setResults,
-        results
+        results,
+        setOverallResults,
+        overallResults
     }:{ 
         data:SpotData,
         answer:Record<string, MoleAnswers>,
@@ -102,6 +110,8 @@ const ReportComponent = (
         sessionData:SessionType | null;
         setResults:(arg:Record<string, ResultAnswers>) => void;
         results:Record<string, ResultAnswers>;
+        setOverallResults:(arg:OverallResultAnswers) => void;
+        overallResults:OverallResultAnswers;
     }) => {
     return(
         <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
@@ -122,6 +132,52 @@ const ReportComponent = (
                 results={results}
                 setResults={setResults}
             />
+            <Overall_Result_Component 
+                data={data}
+                overallResults={overallResults}
+                setOverallResults={setOverallResults}
+            />
+            <div className="markFinished" >
+                <h3>Mark this mole as finished</h3>
+            </div>
+            <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center"}}>
+                <h4>ABCDE</h4>
+                {
+                    (answer?.[data.melanomaId].asymmetry.answer != "" && 
+                    answer?.[data.melanomaId].border.answer != "" && 
+                    answer?.[data.melanomaId].color.answer != "" && 
+                    answer?.[data.melanomaId].diameter.answer != "" && 
+                    answer?.[data.melanomaId].evolution.answer != "") ? (
+                        <SlCheck size={20} color="green" />
+                    ) : (
+                        <SlClose size={20} color="red" />
+                    )
+                }
+
+             
+            </div>
+            <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center",marginTop:5}}>
+                <h4>Results</h4>
+                {
+                    (results?.[data.melanomaId].mole_evolution_chance.answer != 0 && 
+                    results?.[data.melanomaId].mole_evolution_chance.answer != 0 && 
+                    results?.[data.melanomaId].mole_advice != "") ? (
+                        <SlCheck size={20} color="green" />
+                    ) : (
+                        <SlClose size={20} color="red" />
+                    )
+                }
+            </div>
+            <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center",marginTop:5}}>
+                <h4>Overall Results</h4>
+                {
+                    (overallResults?.chance_of_cancer.answer != 0 ) ? (
+                        <SlCheck size={20} color="green" />
+                    ) : (
+                        <SlClose size={20} color="red" />
+                    )
+                }
+            </div>
         </div>
     )
 }
@@ -375,7 +431,7 @@ const Result_Component = ({
         </div>
         <div style={{display:"flex",flexDirection:"column",marginTop:50,alignItems:"center",width:"80%",border:"3px solid black",padding:20,background:"white",boxShadow:"0px 0px 3px 0px black"}}>
                 <h3 style={{alignSelf:"flex-start"}}>2 | Chance of <span style={{color:"magenta",opacity:0.5}}>{data.melanomaId}</span> evolving into <span style={{color:"magenta"}}>cancer</span>:</h3>
-                <div style={{width:"90%",display:"flex",flexDirection:"column",alignItems:"center",padding:10,background:"rgba(0,0,0,0.05)",margin:20,borderRadius:10,opacity:0.8,boxShadow:"inset 0px 0px 1px 0px black",}}>
+                <div style={{width:"90%",display:"flex",flexDirection:"column",alignItems:"center",padding:10,background:"rgba(0,0,0,0.05)",margin:20,borderRadius:10,opacity:0.5,boxShadow:"inset 0px 0px 1px 0px black",}}>
                     <h4 style={{alignSelf:"flex-start",opacity:0.8,margin:10}}>Useful Information:</h4>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:0,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.2)",padding:15,borderRadius:10}}>
                         <h4>Itching:</h4>
@@ -434,7 +490,7 @@ const Result_Component = ({
         </div>
         <div style={{display:"flex",flexDirection:"column",marginTop:50,alignItems:"center",width:"80%",border:"3px solid black",padding:20,background:"white",boxShadow:"0px 0px 3px 0px black"}}>
                 <h3 style={{alignSelf:"flex-start"}}>3 | Advice </h3>
-                <div style={{width:"90%",display:"flex",flexDirection:"column",alignItems:"center",padding:10,background:"rgba(0,0,0,0.05)",margin:20,borderRadius:10,opacity:0.8,boxShadow:"inset 0px 0px 1px 0px black",}}>
+                <div style={{width:"90%",display:"flex",flexDirection:"column",alignItems:"center",padding:10,background:"rgba(0,0,0,0.05)",margin:20,borderRadius:10,opacity:0.5,boxShadow:"inset 0px 0px 1px 0px black",}}>
                     <h4 style={{alignSelf:"flex-start",opacity:0.8,margin:10}}>Useful Information:</h4>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.1)",padding:15,borderRadius:10}}>
                         <h4>Location:</h4>
@@ -478,9 +534,31 @@ const Result_Component = ({
                 </>
 
         </div>
+    </div>
+    )
+}
+
+const Overall_Result_Component = ({
+    data,
+    overallResults,
+    setOverallResults
+}:{
+    data:SpotData;
+    overallResults:OverallResultAnswers;
+    setOverallResults:(arg:OverallResultAnswers) => void;
+
+}) => {
+    return(
+        <div style={{width:"100%",display:"flex",flexDirection:"column",alignItems:"center"}}>
+        <div style={{width:"80%",display:"flex",flexDirection:"column",alignItems:"center",background:"white",padding:20,border:"3px solid black",marginTop:100,borderBottom:0,boxShadow:"2px 5px 3px 2px black",borderTopRightRadius:30,borderTopLeftRadius:30}}>  
+            <h3 style={{fontSize:30}}>Overall Results</h3>
+            <h4 style={{padding:15, background:"rgba(0,255,0,0.3)",borderRadius:10,fontWeight:"500",opacity:0.7,fontSize:14,marginTop:10,maxWidth:"80%"}}>
+                This one is not mole specific therfore you can edit these answers when you analise other moles for the client ...
+            </h4>
+        </div>
         <div style={{display:"flex",flexDirection:"column",marginTop:50,alignItems:"center",width:"80%",border:"3px solid black",padding:20,background:"white",boxShadow:"0px 0px 3px 0px black"}}>
-                <h3 style={{alignSelf:"flex-start"}}>4 | Chance of developing <span style={{color:"magenta"}}>skin cancer</span> based on medical information in the future</h3>
-                <div style={{width:"90%",display:"flex",flexDirection:"column",alignItems:"center",padding:10,background:"rgba(0,0,0,0.05)",margin:20,borderRadius:10,opacity:0.8,boxShadow:"inset 0px 0px 1px 0px black",}}>
+                <h3 style={{alignSelf:"flex-start"}}>1 | Chance of developing <span style={{color:"magenta"}}>skin cancer</span> based on medical information in the future</h3>
+                <div style={{width:"90%",display:"flex",flexDirection:"column",alignItems:"center",padding:10,background:"rgba(0,0,0,0.05)",margin:20,borderRadius:10,opacity:0.5,boxShadow:"inset 0px 0px 1px 0px black",}}>
                     <h4 style={{alignSelf:"flex-start",opacity:0.8,margin:10}}>Useful Information:</h4>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.1)",padding:15,borderRadius:10}}>
                         <h4>Location:</h4>
@@ -513,30 +591,24 @@ const Result_Component = ({
                 </div>
 
                 <ResultBox 
-                    results={results?.[data.melanomaId].mole_evolution_chance}
+                    results={overallResults?.chance_of_cancer}
                     setResults={(ans: 0 | 1 | 2 | 3 | 4 | 5) => {
-                        setResults({
-                            ...results,
-                            [data.melanomaId]: {
-                                ...results[data.melanomaId],
-                                mole_evolution_chance: {
+                        setOverallResults({
+                            ...overallResults,
+                                chance_of_cancer: {
                                     answer: ans,
-                                    description: results?.[data.melanomaId]?.mole_evolution_chance?.description || ''
+                                    description: overallResults?.chance_of_cancer.description || ''
                                 }
-                            }
-                        });
+                            })
                     }}
                     setDesc={(desc: string) => {
-                        setResults({
-                            ...results,
-                            [data.melanomaId]: {
-                                ...results[data.melanomaId],
-                                mole_evolution_chance: {
-                                    ...results[data.melanomaId].mole_evolution_chance,
-                                    description: desc
-                                }
+                        setOverallResults({
+                            ...overallResults,
+                            chance_of_cancer: {
+                                ...overallResults.chance_of_cancer,
+                                description: desc
                             }
-                        });
+                        })
                     }}
                 />
 
