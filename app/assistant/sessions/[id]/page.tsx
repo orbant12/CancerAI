@@ -4,7 +4,7 @@ import {useParams,useRouter} from 'next/navigation'
 import "../../assistant.css"
 import { useState,useRef, useEffect } from 'react';
 import { useAuth } from '@/Context/UserAuthContext';
-import { fetchSession_Single,fetchChat,realTimeUpdateChat, fetchSessionSingleOrder, updateInspectMole_Results } from '@/services/api';
+import { fetchSession_Single,fetchChat,realTimeUpdateChat, fetchSessionSingleOrder, updateInspectMole_Results, uploadAnalasisResults } from '@/services/api';
 import { messageStateChange } from '@/utils/assist/messageStateChanger';
 import { SessionType, SpotData } from '@/utils/types';
 import { MoleInspectionPanel } from './components/moleInspection';
@@ -14,6 +14,7 @@ import ReactPDF from '@react-pdf/renderer';
 import { RequestTableType } from './components/table';
 import { Answers, ReportWriting } from './components/moleReportWriting';
 import { MyDocument } from './components/pdfModal';
+import { Mole_Order_Finish_Provider, MoleAnalasis_Session_Finish_Provider } from './stateManager';
 
 
 
@@ -70,6 +71,7 @@ export default function SessionPage(){
     const [ orders, setOrders ] = useState<RequestTableType[]>([])
     const [ selectedOrderForReview , setSelectedOrderForReview ] = useState<SpotData | null>(null)
     const [isChangeMade, setIsChangeMade] = useState(false);
+    const [isOrderReady, setIsOrderReady] = useState(false);
     const [answerSheetForMoles, setAnswerSheetForMoles] = useState<Record<string, MoleAnswers>>({});
     const [resultSheetForMoles, setResultSheetForMole] = useState<Record<string, ResultAnswers>>({});
     const [ overallResultSheerForMoles, setOverallResultSheetForMoles ] = useState<OverallResultAnswers>({
@@ -87,37 +89,6 @@ export default function SessionPage(){
         })
         console.log(response)
         setChatLog(response) 
-    }
-
-    const fetchSession = async() => {
-        if( currentuser ){
-        const response = await fetchSession_Single({ 
-            sessionId:String(id),
-            userId : currentuser.uid
-        })
-        if (response != null) {
-            setSessionData(response)
-
-            
-            fetchSessionChat(response.clientData.id)
-            const data_preprocess = response.purchase.item.map((item:SpotData,index:number) => {
-                return {
-                    id: index,
-                    melanomaId: item.melanomaId,
-                    location:  item.melanomaDoc.spot[0].slug,
-                    ai_risk: `${item.risk != null ? item.risk + ' Chance' : "Not analised" }`,
-                    finished: false,
-                    moleImage: item.melanomaPictureUrl,
-                    open:() => 
-                        <div onClick={() =>  {setSelectedOrderForReview(item);setSelectedStage(1)}} style={{width:200,height:40,padding:10,borderRadius:10,background:"black",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",alignSelf:"flex-end",marginLeft:0}}>
-                            <h5 style={{color:"white"}}>Start Diagnosis</h5>
-                        </div>
-                    
-                }
-            })
-            setOrders(data_preprocess)
-        }
-    }
     }
 
     const updateChatLog = async (chatState: any[]) => {
@@ -178,8 +149,10 @@ export default function SessionPage(){
     }, [isChatOpen]);
 
 
-    const fetchReport = async () => {
-        if( currentuser && selectedOrderForReview && sessionData){ 
+    // <=== Report Functions For Global Save ====>
+
+    const fetchReport = async (sessionData:SessionType) => {
+        if( currentuser ){ 
         const response = await fetchSessionSingleOrder({ 
             sessionId: String(sessionData.id),
             userId : currentuser.uid
@@ -188,14 +161,43 @@ export default function SessionPage(){
             setAnswerSheetForMoles(response.inspect)
             setResultSheetForMole(response.results)
         }
+        return response
     }
     }
 
-    useEffect(() => {
-        if (isChangeMade == false) {
-            setIsChangeMade(true)
-        } 
-    },[answerSheetForMoles,resultSheetForMoles])
+    const fetchSession = async() => {
+        if( currentuser ){
+        const response = await fetchSession_Single({ 
+            sessionId:String(id),
+            userId : currentuser.uid
+        })
+        if (response != null) {
+            setSessionData(response)
+
+            const res = await fetchReport(response)
+            fetchSessionChat(response.clientData.id)
+            if( res != null){
+                const data_preprocess = response.purchase.item.map((item:SpotData,index:number) => {
+                    return {
+                        id: index,
+                        melanomaId: item.melanomaId,
+                        location:  item.melanomaDoc.spot[0].slug,
+                        ai_risk: `${item.risk != null ? item.risk + ' Chance' : "Not analised" }`,
+                        finished: Mole_Order_Finish_Provider({answer:res.inspect,data:item,results:res?.results}),
+                        moleImage: item.melanomaPictureUrl,
+                        open:() => 
+                            <div onClick={() =>  {setSelectedOrderForReview(item);setSelectedStage(1)}} style={{width:200,height:40,padding:10,borderRadius:10,background:"black",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",alignSelf:"flex-end",marginLeft:0}}>
+                                <h5 style={{color:"white"}}>Start Diagnosis</h5>
+                            </div>
+                        
+                    }
+                })
+                setOrders(data_preprocess)
+                await finishStateManager(data_preprocess)
+            }
+        }
+    }
+    }
 
     const handleSaveDocument = async () => {
         if ( selectedOrderForReview && sessionData && answerSheetForMoles && resultSheetForMoles && overallResultSheerForMoles && currentuser) {
@@ -213,16 +215,47 @@ export default function SessionPage(){
             }
         }
     }
+    
+    const finishStateManager = async (orders:any[]) => {
+        const allMoleState = orders.map((order) => order.finished != undefined && order.finished)
+        const response = MoleAnalasis_Session_Finish_Provider({overallResults:overallResultSheerForMoles,allMoleState:allMoleState})
+        setIsOrderReady(!response)
+    }
+
+    const handleFinish = async (e:boolean) => {
+        if (e == true && currentuser && sessionData ) {
+            const response = await uploadAnalasisResults({
+                sessionData: sessionData,
+                inspectData: answerSheetForMoles,
+                resultData: resultSheetForMoles,
+                overallResults: overallResultSheerForMoles
+            })
+            if(response == true){
+                alert("Session has been closed. Thank you for your work !")
+                router.back()
+            }
+        }
+    }
 
     useEffect(() => {
-        fetchSession()
+        if (isChangeMade == false) {
+            setIsChangeMade(true)
+        } 
+    },[answerSheetForMoles,resultSheetForMoles,overallResultSheerForMoles])
+
+
+    const loadPage = async () => {
+        await fetchSession()
+    }
+
+    useEffect(() => {
+        loadPage()
+        scrollToBottom()
+    },[])
+    useEffect(() => {
+        loadPage()
         scrollToBottom()
     },[currentuser])
-
-    useEffect(() => {
-        fetchReport()
-    },[sessionData,selectedOrderForReview,currentuser])
-
 
     return(
         <div style={{width:"100%",flexDirection:"column",padding:0,display:"flex",minHeight:"130%"}}>
@@ -248,7 +281,13 @@ export default function SessionPage(){
                 />
             </div>
             </div>
-            {selectedStage == 0 && <OrdersPanel orders={orders} />}
+            {selectedStage == 0 && 
+            <OrdersPanel 
+                orders={orders}
+                isOrderReady={isOrderReady} 
+                finishStateManager={loadPage} 
+                handleFinish={(e) => handleFinish(e)}
+            />}
             {selectedStage == 1 &&  
             <MoleInspectionPanel 
                 selectedOrderForReview={selectedOrderForReview} 

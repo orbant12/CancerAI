@@ -112,7 +112,7 @@ return (
 
 
 
-function EnhancedTableToolbar({numSelected,handleAccept,tableTitle}:{numSelected:number,handleAccept:() => void;tableTitle:string | undefined}){
+function EnhancedTableToolbar({numSelected,handleAccept,tableTitle,isOrderReady,handleFinish,type}:{numSelected:number,handleAccept:() => void;tableTitle:string | undefined;isOrderReady?:boolean;handleFinish:(arg:boolean) => void;type:"req" | "mole"}){
 
 
   const router = useRouter()
@@ -166,14 +166,16 @@ function EnhancedTableToolbar({numSelected,handleAccept,tableTitle}:{numSelected
             <BackIcon handleBack={() => router.back()} />
           </IconButton>
         </Tooltip>
-        {true ?
-        <div className="finishButton" style={{position:"relative",background:"rgba(255,0,0,0.4)",boxShadow:"0px 0px 0px 2px red",opacity:0.8}} >
-            <h4 style={{color:"black",fontWeight:"800"}}>Not Ready</h4>
-        </div>
-        :
-        <div className="finishButton" style={{position:"relative"}} >
-          <h4 style={{color:"black",fontWeight:"800"}}>Finsih</h4>
-        </div>
+        {type == "mole" && (
+          isOrderReady ?
+          <div onClick={() => handleFinish(false)} className="finishButton" style={{position:"relative",background:"rgba(255,0,0,0.4)",boxShadow:"0px 0px 0px 2px red",opacity:0.8}} >
+              <h4 style={{color:"black",fontWeight:"800"}}>Not Ready</h4>
+          </div>
+          :
+          <div onClick={() => handleFinish(true)} className="finishButton" style={{position:"relative"}} >
+            <h4 style={{color:"black",fontWeight:"800"}}>Finsih</h4>
+          </div>
+        )
         }
         </>
       )}
@@ -185,13 +187,17 @@ export default function EnhancedTable({
     handleAccept,
     headCells,
     type,
-    tableTitle
+    tableTitle,
+    isOrderReady,
+    handleFinish
     }: {
     rows: RequestTableType[];
     handleAccept:(selected:any[]) => void;
     headCells: readonly HeadCell[];
     type: "req" | "mole";
     tableTitle?:string;
+    isOrderReady?:boolean;
+    handleFinish:(arg:boolean) => void;
 }) {
 
   const [selected, setSelected] = React.useState< any[]>([]);
@@ -253,7 +259,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   return (
     <Box sx={{ width: '100%',height:"100%" }}>
       <Paper sx={{ width: '100%', mb: 2,height:"100%" }}>
-        <EnhancedTableToolbar numSelected={selected.length} handleAccept={() => handleAccept(selected)} tableTitle={tableTitle} />
+        <EnhancedTableToolbar numSelected={selected.length} handleAccept={() => handleAccept(selected)} tableTitle={tableTitle} isOrderReady={isOrderReady} handleFinish={(e:boolean) => handleFinish(e)} type={type} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750,height:"100%" }}

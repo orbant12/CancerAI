@@ -1,9 +1,9 @@
 
 
 import EnhancedTable, { HeadCell, RequestTableType } from "../components/table"
+import { useEffect } from "react";
 
-
-export const OrdersPanel = ({orders}:{orders:RequestTableType[]}) => {
+export const OrdersPanel = ({orders,isOrderReady,finishStateManager,handleFinish}:{orders:RequestTableType[];isOrderReady:boolean;finishStateManager:() => void;handleFinish:(e:boolean) => void}) => {
  
   const headCells: readonly HeadCell[] = [
     {
@@ -32,6 +32,10 @@ export const OrdersPanel = ({orders}:{orders:RequestTableType[]}) => {
   },
   ];
 
+  useEffect(() => {
+    finishStateManager()
+  },[])
+
     return(
         <div style={{marginTop:120}}>
           <EnhancedTable 
@@ -40,6 +44,8 @@ export const OrdersPanel = ({orders}:{orders:RequestTableType[]}) => {
               headCells={headCells}
               type="mole"
               tableTitle='Orders'
+              isOrderReady={isOrderReady}
+              handleFinish={(e) => handleFinish(e)}
           />
         </div>
     )

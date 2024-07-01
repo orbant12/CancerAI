@@ -1,7 +1,7 @@
 import { collection, doc,getDocs, getDoc,updateDoc,deleteDoc,setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { SessionType, SpotData } from "@/utils/types";
-import { MoleAnswers, ResultAnswers } from "@/app/assistant/sessions/[id]/page";
+import { MoleAnswers, OverallResultAnswers, ResultAnswers } from "@/app/assistant/sessions/[id]/page";
 
 interface FetchingProps{
     userId: string;
@@ -20,8 +20,8 @@ export interface ReportinspectType {
             answer: 0 | 1 | 2 | 3 | 4,
             description:string
         }
-    }
-
+    },
+    pdf?: any;
 }
 
 
@@ -267,6 +267,32 @@ export const updateInspectMole_Results = ({userId,sessionId,moleId,inspectData,r
         })
         return true
     } catch(err) {
+        console.log(err)
+        return false
+    }
+}
+
+export const uploadAnalasisResults = async ({sessionData,inspectData,resultData,overallResults}:
+    {
+        sessionData:SessionType;inspectData:Record<string,MoleAnswers>;resultData:Record<string,ResultAnswers>;overallResults:OverallResultAnswers}) => {
+    try{
+        const ref = doc(db,"users",sessionData.clientData.id,"Assist_Panel",sessionData.id)
+        const assistantRef = doc(db,"assistants",sessionData.assistantData.id,"Complete_Sessions",sessionData.id)
+        const deleteRef = doc(db,"assistants",sessionData.assistantData.id,"Sessions",sessionData.id)
+        await updateDoc(ref,{
+            result_documents:{
+                inspect:inspectData,
+                results:resultData,
+                overall_results:overallResults
+            }
+        })
+        await deleteDoc(deleteRef)
+        await setDoc(assistantRef,sessionData)
+
+        return true
+    } catch(err) {
+        const deleteRef = doc(db,"assistants",sessionData.assistantData.id,"Sessions",sessionData.id)
+        await setDoc(deleteRef,sessionData)
         console.log(err)
         return false
     }
