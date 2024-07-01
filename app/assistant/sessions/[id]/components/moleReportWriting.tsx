@@ -68,32 +68,7 @@ export const ReportWriting = (
         // if (response) {
             
         // }
-    }
-
-    // const createPDF_Blob = async () => {
-    //     if (selectedOrderForReview && sessionData && answerSheetForMole && resultSheetForMole && overallResultSheerForMoles) {
-    //       // Generate PDF in memory
-    //       const doc = (
-    //         <MyDocument
-    //           data={selectedOrderForReview}
-    //           sessionData={sessionData}
-    //           analasisData={answerSheetForMole}
-    //           results={resultSheetForMole}
-    //         />
-    //       );
-    
-    //       const pdfInstance = pdf(doc);
-    //       const asBlob = await pdfInstance.toBlob();
-    //       return asBlob;
-    //     }
-    // };
-
-
-    
-
-
-
-
+    }    
 
     return(
         <>

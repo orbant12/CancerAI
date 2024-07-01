@@ -15,7 +15,7 @@ import { RequestTableType } from './components/table';
 import { Answers, ReportWriting } from './components/moleReportWriting';
 import { MyDocument } from './components/pdfModal';
 import { Mole_Order_Finish_Provider, MoleAnalasis_Session_Finish_Provider } from './stateManager';
-
+import { pdf } from '@react-pdf/renderer';
 
 
 type ChatLogType = {
@@ -224,11 +224,30 @@ export default function SessionPage(){
 
     const handleFinish = async (e:boolean) => {
         if (e == true && currentuser && sessionData ) {
+
+            const createPDF_Blob = async () => {
+                if (selectedOrderForReview) {
+                // Generate PDF in memory
+                const doc = (
+                    <MyDocument
+                        data={selectedOrderForReview}
+                        sessionData={sessionData}
+                        analasisData={answerSheetForMoles}
+                        results={resultSheetForMoles}
+                    />
+                );
+
+                const pdfInstance = pdf(doc);
+                const asBlob = await pdfInstance.toBlob();
+                return asBlob;
+                }
+            };
             const response = await uploadAnalasisResults({
                 sessionData: sessionData,
                 inspectData: answerSheetForMoles,
                 resultData: resultSheetForMoles,
-                overallResults: overallResultSheerForMoles
+                overallResults: overallResultSheerForMoles,
+                pdfBlob: await createPDF_Blob(),
             })
             if(response == true){
                 alert("Session has been closed. Thank you for your work !")

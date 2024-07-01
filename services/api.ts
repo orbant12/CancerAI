@@ -1,7 +1,8 @@
 import { collection, doc,getDocs, getDoc,updateDoc,deleteDoc,setDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, storage } from "./firebase";
 import { SessionType, SpotData } from "@/utils/types";
 import { MoleAnswers, OverallResultAnswers, ResultAnswers } from "@/app/assistant/sessions/[id]/page";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 interface FetchingProps{
     userId: string;
@@ -272,19 +273,23 @@ export const updateInspectMole_Results = ({userId,sessionId,moleId,inspectData,r
     }
 }
 
-export const uploadAnalasisResults = async ({sessionData,inspectData,resultData,overallResults}:
+export const uploadAnalasisResults = async ({sessionData,inspectData,resultData,overallResults,pdfBlob}:
     {
-        sessionData:SessionType;inspectData:Record<string,MoleAnswers>;resultData:Record<string,ResultAnswers>;overallResults:OverallResultAnswers}) => {
+        sessionData:SessionType;inspectData:Record<string,MoleAnswers>;resultData:Record<string,ResultAnswers>;overallResults:OverallResultAnswers;pdfBlob:any}) => {
     try{
-        const ref = doc(db,"users",sessionData.clientData.id,"Assist_Panel",sessionData.id)
+        const docRef = doc(db,"users",sessionData.clientData.id,"Assist_Panel",sessionData.id)
         const assistantRef = doc(db,"assistants",sessionData.assistantData.id,"Complete_Sessions",sessionData.id)
         const deleteRef = doc(db,"assistants",sessionData.assistantData.id,"Sessions",sessionData.id)
-        await updateDoc(ref,{
+        const storageRef = ref(storage,`users/${sessionData.clientData.id}/melanomaResults"/${sessionData.id}.pdf`)
+        await uploadBytes(storageRef,pdfBlob)
+        const url = await getDownloadURL(storageRef)
+        await updateDoc(docRef,{
             result_documents:{
                 inspect:inspectData,
                 results:resultData,
-                overall_results:overallResults
-            }
+                overall_results:overallResults,
+                pdf: url
+            },
         })
         await deleteDoc(deleteRef)
         await setDoc(assistantRef,sessionData)
