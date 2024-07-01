@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from '@/Context/UserAuthContext';
-import { fetchRequests, handleRequestAccept } from '@/services/api';
+import { fetchRequests, handleRequestAccept, setupDocumentsForAssistant } from '@/services/api';
 import { Gender, SessionType, SkinType, Slug, SpotData } from "@/utils/types";
 import * as React from 'react';
 import EnhancedTable, { HeadCell } from '../sessions/[id]/components/table';

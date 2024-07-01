@@ -2,6 +2,8 @@
 
 // ASSISTANCE TYPES
 
+import {  ReportinspectType } from "@/services/api";
+
 type Assistance_Fields = "dermotologist" 
 
 type AssustantData = {
@@ -58,6 +60,7 @@ export type SessionType = {
         item:SpotData[];
     },
     created_at:Timestamp | Date;
+    result_documents: ReportinspectType | null;
 }
 
 

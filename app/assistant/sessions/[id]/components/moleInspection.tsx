@@ -9,10 +9,14 @@ import { timestamp_DaysAgo_Calculator, timestampBirtDate_Age_Calculator_FromToda
 
 export const MoleInspectionPanel = ({
     selectedOrderForReview,
-    sessionData
+    sessionData,
+    isChangeMade,
+    handleSaveDocument
 }:{
     selectedOrderForReview:SpotData | null;
     sessionData:SessionType | null;
+    isChangeMade:boolean;
+    handleSaveDocument:() => void;
 }) => {
 
     const [ selectedMole , setSelectedMole ] = useState<string | undefined>(selectedOrderForReview?.melanomaPictureUrl)
@@ -38,7 +42,17 @@ export const MoleInspectionPanel = ({
     return(
         <>
         {selectedOrderForReview ?
-        <div style={{width:"100%",display:"flex",flexDirection:"column",alignItems:"center",marginTop:20}}>
+        <>
+            {!isChangeMade ?
+                <div className="finishButton" style={{position:"fixed",opacity:1,top:30,bottom:"auto",right:20,zIndex:10}} >
+                    <h4 style={{color:"black",fontWeight:"800"}}>Saved</h4>
+                </div>
+                :
+                <div onClick={handleSaveDocument} className="finishButton" style={{position:"fixed",background:"#FF7F7F",boxShadow:"0px 0px 0px 2px red",opacity:1,top:30,bottom:"auto",right:20,zIndex:10}} >
+                    <h4 style={{color:"black",fontWeight:"800"}}>Click To Save</h4>
+                </div>
+            }
+        <div style={{width:"100%",display:"flex",flexDirection:"column",alignItems:"center",marginTop:170}}>
             <h1>Inspect • <span style={{opacity:0.4}}>{selectedOrderForReview.melanomaId}</span></h1>
             <h4 style={{padding:15, background:"rgba(0,255,0,0.3)",borderRadius:10,fontWeight:"500",opacity:0.7,fontSize:14,marginTop:10,maxWidth:"80%"}}>
                 Analyse mole {selectedOrderForReview.melanomaId} with useful tools like zooming and access to older images of the mole for the inspection of evolution!
@@ -48,43 +62,88 @@ export const MoleInspectionPanel = ({
             />
             <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginTop:20,width:"90%"}}>
                 <h2 style={{alignSelf:"flex-start",margin:20}}>Older Images</h2>
-                        <div style={ selectedMole == selectedOrderForReview.melanomaPictureUrl ? {display:"flex",flexDirection:"row",width:"80%",padding:15,justifyContent:"space-between",alignItems:"center",background:"black",border:"3px solid magenta",borderRadius:10,marginTop:20,marginBottom:20} : {display:"flex",flexDirection:"row",width:"80%",border:"3px solid black",padding:15,justifyContent:"space-between",alignItems:"center",background:"black",borderRadius:10,marginTop:20,marginBottom:20}}>
+                        <div style={ selectedMole == selectedOrderForReview.melanomaPictureUrl ? {display:"flex",flexDirection:"row",width:"80%",padding:15,justifyContent:"space-between",alignItems:"center",background:"black",border:"3px solid magenta",borderRadius:10,marginTop:20,marginBottom:20} : {display:"flex",flexDirection:"row",width:"80%",border:"3px solid black",padding:15,justifyContent:"space-between",alignItems:"center",background:"white",borderRadius:10,marginTop:20,marginBottom:20}}>
                             <img src={selectedOrderForReview.melanomaPictureUrl} alt="" style={{width:150,height:150,borderRadius:10}} />
-                            <div style={{marginLeft:0,color:"white"}}>
-                                <h2>{timestampToString(selectedOrderForReview.created_at)}</h2>
-                                <h4 style={{fontWeight:"400",color:"lightgray"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"white"}}>{timestamp_DaysAgo_Calculator(selectedOrderForReview.created_at)} days</span> ago</h4>
-                            </div>
-                            <div style={{marginRight:50,color:"white"}}>
-                                <h2>Information</h2>
-                                <h4>Bleeding: ?</h4>
-                                <h4>Itching: ?</h4>
-                            </div>
+                            {selectedMole != selectedOrderForReview.melanomaPictureUrl ?
+                                <>
+                                    <div style={{marginLeft:0}}>
+                                    <h2>{timestampToString(selectedOrderForReview.created_at)}</h2>
+                                    <h4 style={{fontWeight:"400",color:"rgba(0,0,0,0.6)"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"black"}}>{timestamp_DaysAgo_Calculator(selectedOrderForReview.created_at)} days</span> ago</h4>
+                                    </div>
+                                    <div style={{marginRight:50}}>
+                                        <h2>Information</h2>
+                                        <h4>Bleeding: ?</h4>
+                                        <h4>Itching: ?</h4>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <div style={{marginLeft:0}}>
+                                    <h2 style={{color:"white"}}>{timestampToString(selectedOrderForReview.created_at)}</h2>
+                                    <h4 style={{fontWeight:"400",color:"lightgray"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"white"}}>{timestamp_DaysAgo_Calculator(selectedOrderForReview.created_at)} days</span> ago</h4>
+                                    </div>
+                                    <div style={{marginRight:50,color:"rgba(255,255,255,0.6)"}}>
+                                        <h2>Information</h2>
+                                        <h4>Bleeding: <span style={{color:"white"}}>?</span></h4>
+                                        <h4>Itching: <span style={{color:"white"}}>?</span></h4>
+                                    </div>
+                                </>
+                            }
+                            {selectedMole != selectedOrderForReview.melanomaPictureUrl ?
+                            <div onClick={() => setSelectedMole(selectedOrderForReview.melanomaPictureUrl)} style={{display:"flex",flexDirection:"column",background:"black",width:150,height:50,padding:10,alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer"}}>
+                                 <h3 style={{color:"white"}}>Show</h3>
+                            </div>    
+                            :
                             <div onClick={() => setSelectedMole(selectedOrderForReview.melanomaPictureUrl)} style={{display:"flex",flexDirection:"column",background:"white",width:150,height:50,padding:10,alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer"}}>
-                                {selectedMole == selectedOrderForReview.melanomaPictureUrl ? <h3 style={{color:"black"}}>Active</h3> : <h3 style={{color:"black"}}>Show</h3>}
-                            </div>
+                                 <h3 style={{color:"black"}}>Active</h3> 
+                            </div>   
+                            }
                             <h4 style={{position:"absolute",marginBottom:205,color:"magenta"}}>Most Recent ...</h4>
                         </div>
                 {selectedMoleHistory.length > 0 &&
                     selectedMoleHistory.map((mole, index) => (
-                        <div key={index} style={{display:"flex",flexDirection:"row",width:"80%",border:"3px solid black",padding:10,justifyContent:"space-between",alignItems:"center",background:"white"}}>
-                            <img src={selectedOrderForReview.melanomaPictureUrl} alt="" style={{width:150,height:150,borderRadius:10}} />
-                            <div style={{marginLeft:0}}>
-                                <h2>{timestampToString(mole.created_at)}</h2>
-                                <h4 style={{fontWeight:"400",color:"lightgray"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"white"}}>{timestamp_DaysAgo_Calculator(mole.created_at)} days</span> ago</h4>
-                            </div>
-                            <div style={{marginRight:50}}>
-                                <h2>Information</h2>
-                                <h4>Bleeding: ?</h4>
-                                <h4>Itching: ?</h4>
-                            </div>
+                        <div key={index} style={ selectedMole == mole.melanomaPictureUrl ? {display:"flex",flexDirection:"row",width:"80%",padding:15,justifyContent:"space-between",alignItems:"center",background:"black",border:"3px solid magenta",borderRadius:10,marginTop:20,marginBottom:20} : {display:"flex",flexDirection:"row",width:"80%",border:"3px solid black",padding:15,justifyContent:"space-between",alignItems:"center",background:"white",borderRadius:10,marginTop:20,marginBottom:20}}>
+                            <img src={mole.melanomaPictureUrl} alt="" style={{width:150,height:150,borderRadius:10}} />
+                            {selectedMole != mole.melanomaPictureUrl ?
+                                <>
+                                    <div style={{marginLeft:0}}>
+                                    <h2>{timestampToString(mole.created_at)}</h2>
+                                    <h4 style={{fontWeight:"400",color:"rgba(0,0,0,0.6)"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"black"}}>{timestamp_DaysAgo_Calculator(mole.created_at)} days</span> ago</h4>
+                                    </div>
+                                    <div style={{marginRight:50}}>
+                                        <h2>Information</h2>
+                                        <h4>Bleeding: ?</h4>
+                                        <h4>Itching: ?</h4>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <div style={{marginLeft:0}}>
+                                    <h2 style={{color:"white"}}>{timestampToString(mole.created_at)}</h2>
+                                    <h4 style={{fontWeight:"400",color:"lightgray"}}>Taken <span style={{fontWeight:"700",opacity:1,color:"white"}}>{timestamp_DaysAgo_Calculator(mole.created_at)} days</span> ago</h4>
+                                    </div>
+                                    <div style={{marginRight:50,color:"rgba(255,255,255,0.6)"}}>
+                                        <h2>Information</h2>
+                                        <h4>Bleeding: <span style={{color:"white"}}>?</span></h4>
+                                        <h4>Itching: <span style={{color:"white"}}>?</span></h4>
+                                    </div>
+                                </>
+                            }
+                            {selectedMole != mole.melanomaPictureUrl ?
                             <div onClick={() => setSelectedMole(mole.melanomaPictureUrl)} style={{display:"flex",flexDirection:"column",background:"black",width:150,height:50,padding:10,alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer"}}>
-                                <h3 style={{color:"white"}}>Show</h3>
-                            </div>
+                                 <h3 style={{color:"white"}}>Show</h3>
+                            </div>    
+                            :
+                            <div onClick={() => setSelectedMole(mole.melanomaPictureUrl)} style={{display:"flex",flexDirection:"column",background:"white",width:150,height:50,padding:10,alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer"}}>
+                                 <h3 style={{color:"black"}}>Active</h3> 
+                            </div>   
+                            }
                         </div>
                     )) 
                 }
             </div>
         </div>
+        </>
         :
         <div style={{width:"100%",height:"100%",flexDirection:"column",display:"flex",justifyContent:"center",alignItems:"center"}}>
             <h4>You need to select an order first !</h4>

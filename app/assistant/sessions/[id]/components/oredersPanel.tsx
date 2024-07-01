@@ -33,7 +33,7 @@ export const OrdersPanel = ({orders}:{orders:RequestTableType[]}) => {
   ];
 
     return(
-        <div>
+        <div style={{marginTop:120}}>
           <EnhancedTable 
               rows={orders}
               handleAccept={() => console.log("Accepted")}

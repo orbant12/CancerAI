@@ -4,15 +4,16 @@ import {useParams,useRouter} from 'next/navigation'
 import "../../assistant.css"
 import { useState,useRef, useEffect } from 'react';
 import { useAuth } from '@/Context/UserAuthContext';
-import { fetchSession_Single,fetchChat,realTimeUpdateChat } from '@/services/api';
+import { fetchSession_Single,fetchChat,realTimeUpdateChat, fetchSessionSingleOrder, updateInspectMole_Results } from '@/services/api';
 import { messageStateChange } from '@/utils/assist/messageStateChanger';
 import { SessionType, SpotData } from '@/utils/types';
 import { MoleInspectionPanel } from './components/moleInspection';
 import { ChatModal } from './components/chat';
 import { OrdersPanel } from './components/oredersPanel';
-
+import ReactPDF from '@react-pdf/renderer';
 import { RequestTableType } from './components/table';
 import { Answers, ReportWriting } from './components/moleReportWriting';
+import { MyDocument } from './components/pdfModal';
 
 
 
@@ -40,12 +41,14 @@ export interface MoleAnswers {
     color: Answer;
     diameter: Answer;
     evolution: Answer;
+    id:string;
 }
 
 export interface ResultAnswers {
     mole_malignant_chance: Result;
     mole_evolution_chance: Result;
     mole_advice: string;
+    id:string;
 }
 
 export interface OverallResultAnswers {
@@ -66,6 +69,7 @@ export default function SessionPage(){
     const scrollableDivRef = useRef<HTMLDivElement>(null);
     const [ orders, setOrders ] = useState<RequestTableType[]>([])
     const [ selectedOrderForReview , setSelectedOrderForReview ] = useState<SpotData | null>(null)
+    const [isChangeMade, setIsChangeMade] = useState(false);
     const [answerSheetForMoles, setAnswerSheetForMoles] = useState<Record<string, MoleAnswers>>({});
     const [resultSheetForMoles, setResultSheetForMole] = useState<Record<string, ResultAnswers>>({});
     const [ overallResultSheerForMoles, setOverallResultSheetForMoles ] = useState<OverallResultAnswers>({
@@ -74,6 +78,7 @@ export default function SessionPage(){
             description:""
         }
     })
+
 
     const fetchSessionChat = async (clientId:string) => {
         const response = await fetchChat({
@@ -92,48 +97,7 @@ export default function SessionPage(){
         })
         if (response != null) {
             setSessionData(response)
-            const stateObjectForAnswers = response.purchase.item.reduce((acc: Record<string, any>, item: SpotData) => {
-                acc[item.melanomaId] = {
-                    asymmetry: {
-                        answer: "",
-                        description: ""
-                    },
-                    border: {
-                        answer: "",
-                        description: ""
-                    },
-                    color: {
-                        answer: "",
-                        description: ""
-                    },
-                    diameter: {
-                        answer: "",
-                        description: ""
-                    },
-                    evolution: {
-                        answer: "",
-                        description: ""
-                    }
-                };
-                return acc;
-            }, {});
-            setAnswerSheetForMoles(stateObjectForAnswers)
 
-            const stateObjectForResults = response.purchase.item.reduce((acc: Record<string, any>, item: SpotData) => {
-                acc[item.melanomaId] = {
-                    mole_malignant_chance: {
-                        answer: 0,
-                        description: ""
-                    },
-                    mole_evolution_chance: {
-                        answer: 0,
-                        description: ""
-                    },
-                    mole_advice: ""
-                };
-                return acc;
-            }, {});
-            setResultSheetForMole(stateObjectForResults)
             
             fetchSessionChat(response.clientData.id)
             const data_preprocess = response.purchase.item.map((item:SpotData,index:number) => {
@@ -196,12 +160,6 @@ export default function SessionPage(){
         }
     };
 
-
-    useEffect(() => {
-        fetchSession()
-        scrollToBottom()
-    },[currentuser])
-
     //WEB SOCKET
     useEffect(() => {
         if( sessionData ){
@@ -215,14 +173,61 @@ export default function SessionPage(){
         }
     }, [sessionData])
 
-
     useEffect(() => {
         scrollToBottom()
     }, [isChatOpen]);
 
+
+    const fetchReport = async () => {
+        if( currentuser && selectedOrderForReview && sessionData){ 
+        const response = await fetchSessionSingleOrder({ 
+            sessionId: String(sessionData.id),
+            userId : currentuser.uid
+        })
+        if (response != null) { 
+            setAnswerSheetForMoles(response.inspect)
+            setResultSheetForMole(response.results)
+        }
+    }
+    }
+
+    useEffect(() => {
+        if (isChangeMade == false) {
+            setIsChangeMade(true)
+        } 
+    },[answerSheetForMoles,resultSheetForMoles])
+
+    const handleSaveDocument = async () => {
+        if ( selectedOrderForReview && sessionData && answerSheetForMoles && resultSheetForMoles && overallResultSheerForMoles && currentuser) {
+            const response = await updateInspectMole_Results({
+                userId:currentuser?.uid,
+                sessionId:sessionData?.id,
+                moleId:selectedOrderForReview?.melanomaId,
+                inspectData:answerSheetForMoles[selectedOrderForReview?.melanomaId],
+                resultData:resultSheetForMoles[selectedOrderForReview?.melanomaId]
+            })
+            if ( response != false ) {
+                setIsChangeMade(false)
+            } else {
+                alert("Failed to save the document")
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchSession()
+        scrollToBottom()
+    },[currentuser])
+
+    useEffect(() => {
+        fetchReport()
+    },[sessionData,selectedOrderForReview,currentuser])
+
+
     return(
         <div style={{width:"100%",flexDirection:"column",padding:0,display:"flex",minHeight:"130%"}}>
-            <div style={{display:"flex",flexDirection:"row",alignItems:"center",background:"white",justifyContent:"space-between",padding:2,borderRadius:100,margin:20}}>
+            <div style={{display:"flex",flexDirection:"column",width:"100%",padding:10,background:"rgba(0,0,0,1)",zIndex:9,position:"fixed",justifyContent:"center"}}>
+            <div style={{display:"flex",flexDirection:"row",alignItems:"center",backgroundColor:"white",justifyContent:"space-between",padding:0,borderRadius:100,margin:10,zIndex:10,width:"50%",boxShadow:"revert 0px 0px 10px 0px black"}}>
                 <Bubble 
                     title='Orders'
                     selectedStage={selectedStage}
@@ -242,18 +247,27 @@ export default function SessionPage(){
                     index={2}
                 />
             </div>
+            </div>
             {selectedStage == 0 && <OrdersPanel orders={orders} />}
-            {selectedStage == 1 &&  <MoleInspectionPanel selectedOrderForReview={selectedOrderForReview} sessionData={sessionData} />}            
+            {selectedStage == 1 &&  
+            <MoleInspectionPanel 
+                selectedOrderForReview={selectedOrderForReview} 
+                sessionData={sessionData} 
+                handleSaveDocument={handleSaveDocument}
+                isChangeMade={isChangeMade}
+            />}            
             {selectedStage == 2 &&  
             <ReportWriting 
                 selectedOrderForReview={selectedOrderForReview} 
                 sessionData={sessionData} 
-                answerSheetForMole={answerSheetForMoles} 
-                setAnswerSheetForMoles={setAnswerSheetForMoles}
-                resultSheetForMole={resultSheetForMoles}
-                setResultSheetForMole={setResultSheetForMole}
+                isChangeMade={isChangeMade}
+                answerSheetForMoles={answerSheetForMoles}
+                resultSheetForMoles={resultSheetForMoles}
                 overallResultSheerForMoles={overallResultSheerForMoles}
                 setOverallResultSheetForMoles={setOverallResultSheetForMoles}
+                setAnswerSheetForMoles={setAnswerSheetForMoles}
+                setResultSheetForMole={setResultSheetForMole}
+                handleSaveDocument={handleSaveDocument}
             />}      
             <ChatModal 
                 visible={isChatOpen}

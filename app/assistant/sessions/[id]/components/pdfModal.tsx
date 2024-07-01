@@ -23,7 +23,7 @@ export const PDF_Modal = (
         results: Record<string, ResultAnswers>;
     }) => {
     return(
-            <div style={{width:"100%",height:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",background:"rgba(0,0,0,0.8)",position:"fixed",marginTop:-112,zIndex:100}}>
+            <div style={{width:"100%",height:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",background:"rgba(0,0,0,0.8)",position:"fixed",marginTop:-135,zIndex:100}}>
                 <PDFViewer style={{width:"100%",height:"100%"}}>
                     <MyDocument 
                         data={selectedOrderForReview}
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   });
   
   // Create Document Component
-  const MyDocument = ({
+  export const MyDocument = ({
     data,
     sessionData,
     analasisData,

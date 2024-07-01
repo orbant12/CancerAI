@@ -1,9 +1,12 @@
 import { SessionType, SpotData} from "@/utils/types"
 import { SlCheck,SlClose } from "react-icons/sl";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Answer, MoleAnswers, OverallResultAnswers, Result, ResultAnswers } from "../page";
-import { PDF_Modal } from "./pdfModal";
+import { MyDocument, PDF_Modal } from "./pdfModal";
+import { pdf } from '@react-pdf/renderer';
 import { timestampBirtDate_Age_Calculator_FromToday, timestampToString } from "@/utils/date_functions";
+import { useAuth } from "@/Context/UserAuthContext";
+import { fetchSessionSingleOrder, updateInspectMole_Results } from "@/services/api";
 
 export type AnswerTypes = "asymmetry" | "border" | "color" | "diameter" | "evolution"
 
@@ -35,38 +38,84 @@ export const ReportWriting = (
     {
         selectedOrderForReview,
         sessionData,
-        answerSheetForMole,
-        setAnswerSheetForMoles,
-        resultSheetForMole,
-        setResultSheetForMole,
+        isChangeMade,
+        answerSheetForMoles,
+        resultSheetForMoles,
         overallResultSheerForMoles,
-        setOverallResultSheetForMoles 
+        setAnswerSheetForMoles,
+        setResultSheetForMole,
+        setOverallResultSheetForMoles,
+        handleSaveDocument
     }:{
         selectedOrderForReview:SpotData | null;
         sessionData:SessionType | null;
-        answerSheetForMole:Record<string, MoleAnswers>;
-        setAnswerSheetForMoles:(arg:Record<string, MoleAnswers>) => void;
-        resultSheetForMole:Record<string, ResultAnswers>;
-        setResultSheetForMole:(arg:Record<string, ResultAnswers>) => void;
+        isChangeMade:boolean;
+        answerSheetForMoles:Record<string, MoleAnswers>;
+        resultSheetForMoles:Record<string, ResultAnswers>;
         overallResultSheerForMoles:OverallResultAnswers;
+        setAnswerSheetForMoles:(arg:Record<string, MoleAnswers>) => void;
+        setResultSheetForMole:(arg:Record<string, ResultAnswers>) => void;
         setOverallResultSheetForMoles:(arg:OverallResultAnswers) => void;
+        handleSaveDocument:() => void;
     }) => {
     
-
+    const { currentuser } = useAuth()
     const [isPDFVisible, setIsPDFVisible] = useState(false)
+    const [pdfBlob, setPdfBlob] = useState(null);
+
+    const handleFinishMark = async () => {
+        // const response = await createPDF_Blob();
+        // if (response) {
+            
+        // }
+    }
+
+    // const createPDF_Blob = async () => {
+    //     if (selectedOrderForReview && sessionData && answerSheetForMole && resultSheetForMole && overallResultSheerForMoles) {
+    //       // Generate PDF in memory
+    //       const doc = (
+    //         <MyDocument
+    //           data={selectedOrderForReview}
+    //           sessionData={sessionData}
+    //           analasisData={answerSheetForMole}
+    //           results={resultSheetForMole}
+    //         />
+    //       );
+    
+    //       const pdfInstance = pdf(doc);
+    //       const asBlob = await pdfInstance.toBlob();
+    //       return asBlob;
+    //     }
+    // };
+
+
+    
+
+
+
+
 
     return(
         <>
         {selectedOrderForReview && sessionData ?
-            <div>
+            <div style={{marginTop:150}}>
+                {!isChangeMade ?
+                    <div className="finishButton" style={{position:"fixed",opacity:1,top:30,bottom:"auto",right:20,zIndex:10}} >
+                        <h4 style={{color:"black",fontWeight:"800"}}>Saved</h4>
+                    </div>
+                    :
+                    <div onClick={handleSaveDocument} className="finishButton" style={{position:"fixed",background:"#FF7F7F",boxShadow:"0px 0px 0px 2px red",opacity:1,top:30,bottom:"auto",right:20,zIndex:10}} >
+                        <h4 style={{color:"black",fontWeight:"800"}}>Click To Save</h4>
+                    </div>
+                }
                 {isPDFVisible ?
                     <PDF_Modal
                         setIsPDFVisible={setIsPDFVisible}
                         isPDFVisible={isPDFVisible}
                         selectedOrderForReview={selectedOrderForReview}
                         sessionData={sessionData}
-                        answers={answerSheetForMole}
-                        results={resultSheetForMole}
+                        answers={answerSheetForMoles}
+                        results={resultSheetForMoles}
                     />
                     :
                     <div onClick={() => setIsPDFVisible(!isPDFVisible)} style={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",background:"black",padding:15,borderRadius:100,position:"fixed",bottom:95,right:20,boxShadow:"0px 1px 10px 1px black",cursor:"pointer"}}>
@@ -75,13 +124,14 @@ export const ReportWriting = (
                 }
                 <ReportComponent 
                     data={selectedOrderForReview}
-                    answer={answerSheetForMole}
+                    answer={answerSheetForMoles}
                     setAnswer={setAnswerSheetForMoles}
                     sessionData={sessionData}
-                    results={resultSheetForMole}
+                    results={resultSheetForMoles}
                     setResults={setResultSheetForMole}
                     overallResults={overallResultSheerForMoles}
                     setOverallResults={setOverallResultSheetForMoles}
+                    handleFinishMark={handleFinishMark}
                 />
             </div>
         :
@@ -102,7 +152,8 @@ const ReportComponent = (
         setResults,
         results,
         setOverallResults,
-        overallResults
+        overallResults,
+        handleFinishMark
     }:{ 
         data:SpotData,
         answer:Record<string, MoleAnswers>,
@@ -112,8 +163,11 @@ const ReportComponent = (
         results:Record<string, ResultAnswers>;
         setOverallResults:(arg:OverallResultAnswers) => void;
         overallResults:OverallResultAnswers;
+        handleFinishMark:() => void;
     }) => {
     return(
+        <>
+        { answer?.[data.melanomaId] != undefined ?
         <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
             <h3 style={{fontSize:40}}>Report Writing</h3>
             <h4 style={{padding:15, background:"rgba(0,255,0,0.3)",borderRadius:10,fontWeight:"500",opacity:0.7,fontSize:14,marginTop:10,maxWidth:"80%"}}>Answer the following questions about the mole. Your answers will fill out the PDF template shown below...</h4>
@@ -137,12 +191,32 @@ const ReportComponent = (
                 overallResults={overallResults}
                 setOverallResults={setOverallResults}
             />
-            <div className="markFinished" >
-                <h3>Mark this mole as finished</h3>
-            </div>
+
+            {
+            (answer?.[data.melanomaId].asymmetry.answer != "" && 
+            answer?.[data.melanomaId].border.answer != "" && 
+            answer?.[data.melanomaId].color.answer != "" && 
+            answer?.[data.melanomaId].diameter.answer != "" && 
+            answer?.[data.melanomaId].evolution.answer != ""
+                ) &&
+                (results?.[data.melanomaId].mole_evolution_chance.answer != 0 && 
+                results?.[data.melanomaId].mole_evolution_chance.answer != 0 && 
+                results?.[data.melanomaId].mole_advice != ""
+                    ) && 
+                    (overallResults?.chance_of_cancer.answer != 0 
+                    ) ? 
+                    <div style={{opacity:1}} onClick={() => handleFinishMark()} className="markFinished" >
+                        <h3>Mark this mole as finished</h3>
+                    </div>
+                    :
+                    <div style={{opacity:0.4}} onClick={() => alert("You have some crutial field unfilled !")} className="markFinished" >
+                        <h3>Mark this mole as finished</h3>
+                    </div>
+            }
+      
             <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center"}}>
                 <h4>ABCDE</h4>
-                {
+                { answer?.[data.melanomaId] != undefined &&
                     (answer?.[data.melanomaId].asymmetry.answer != "" && 
                     answer?.[data.melanomaId].border.answer != "" && 
                     answer?.[data.melanomaId].color.answer != "" && 
@@ -158,7 +232,7 @@ const ReportComponent = (
             </div>
             <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center",marginTop:5}}>
                 <h4>Results</h4>
-                {
+                { answer?.[data.melanomaId] != undefined &&
                     (results?.[data.melanomaId].mole_evolution_chance.answer != 0 && 
                     results?.[data.melanomaId].mole_evolution_chance.answer != 0 && 
                     results?.[data.melanomaId].mole_advice != "") ? (
@@ -168,9 +242,9 @@ const ReportComponent = (
                     )
                 }
             </div>
-            <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center",marginTop:5}}>
+            <div style={{width:200,flexDirection:"row",justifyContent:"space-between",display:"flex",background:"rgba(0,0,0,0.05)",padding:10,borderRadius:10,alignItems:"center",marginTop:5,marginBottom:50}}>
                 <h4>Overall Results</h4>
-                {
+                { answer?.[data.melanomaId] != undefined &&
                     (overallResults?.chance_of_cancer.answer != 0 ) ? (
                         <SlCheck size={20} color="green" />
                     ) : (
@@ -179,6 +253,10 @@ const ReportComponent = (
                 }
             </div>
         </div>
+        :
+        null
+        }
+        </>
     )
 }
 

@@ -1,9 +1,27 @@
 import { collection, doc,getDocs, getDoc,updateDoc,deleteDoc,setDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { SessionType } from "@/utils/types";
+import { SessionType, SpotData } from "@/utils/types";
+import { MoleAnswers, ResultAnswers } from "@/app/assistant/sessions/[id]/page";
 
 interface FetchingProps{
     userId: string;
+}
+
+type RespondDocument = {
+    inspect: Record<string, MoleAnswers>;
+    results: Record<string, ResultAnswers>; 
+ };
+
+export interface ReportinspectType {
+    inspect: Record<string, MoleAnswers>;
+    results: Record<string, ResultAnswers>; 
+    overall_results:{
+        chance_of_cancer:{
+            answer: 0 | 1 | 2 | 3 | 4,
+            description:string
+        }
+    }
+
 }
 
 
@@ -72,6 +90,43 @@ export const fetchSession_Single = async ({sessionId,userId} : {sessionId:string
     }
 }
 
+export const fetchSessionSingleOrder = async ({
+    sessionId,
+    userId,
+}: {
+    sessionId: string;
+    userId: string;
+}): Promise<RespondDocument | null> => {
+    try {
+        const ref = doc(db, "assistants", userId, "Sessions", sessionId);
+        const snapshot = await getDoc(ref);
+
+        if (!snapshot.exists()) {
+            console.error(`Session with ID ${sessionId} does not exist for user ${userId}.`);
+            return null;
+        }
+
+        const data = snapshot.data() as SessionType;
+        if(data.result_documents){
+        const inspectData = data.result_documents.inspect
+        const resultData = data.result_documents.results
+
+        const respondDocument: RespondDocument = {
+            inspect: inspectData,
+            results: resultData
+        };
+
+        return respondDocument;
+        } else {
+            return null
+        }
+
+    } catch (error) {
+        console.error("Error fetching session single order:", error);
+        return null;
+    }
+};
+
 export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:string}) => {
     try{
         const ref = doc(db,"users",clientId,"Assist_Panel",sessionId)
@@ -125,8 +180,12 @@ export const handleRequestAccept = async ({sessionData}:{sessionData:SessionType
     try{
         const ref = doc(db,"assistants",sessionData.assistantData.id,"Sessions",sessionData.id)
         const reqRef = doc(db,"assistants",sessionData.assistantData.id,"Requests",sessionData.id)
+        const response_document = await setupDocumentsForAssistant({sessionData})
+        if(response_document != false){
+            sessionData.result_documents = response_document as ReportinspectType
+            await setDoc(ref,sessionData)
+        }
         await deleteDoc(reqRef)
-        await setDoc(ref,sessionData)
         return true
     } catch(err) {
         const reqRef = doc(db,"assistants",sessionData.assistantData.id,"Requests",sessionData.id)
@@ -147,5 +206,68 @@ export const fetchMoleHistory = async ({moleId,userId}:{moleId:string,userId:str
         return history;
     } catch {
         return null
+    }
+}
+
+export const setupDocumentsForAssistant = async ({ sessionData }: { sessionData: SessionType }): Promise<ReportinspectType | false> => {
+    try {
+        const stateObjectForOrders = sessionData.purchase.item.reduce((acc: Record<string, MoleAnswers>, item: SpotData) => {
+            acc[item.melanomaId] = {
+                asymmetry: { answer: "", description: "" },
+                border: { answer: "", description: "" },
+                color: { answer: "", description: "" },
+                diameter: { answer: "", description: "" },
+                evolution: { answer: "", description: "" },
+                id: item.melanomaId,
+            };
+            return acc;
+        }, {});
+
+        const stateObjectForResults = sessionData.purchase.item.reduce((acc: Record<string, ResultAnswers>, item: SpotData) => {
+            acc[item.melanomaId] = {
+                mole_malignant_chance: { answer: 0, description: "" },
+                mole_evolution_chance: { answer: 0, description: "" },
+                mole_advice: "",
+                id: item.melanomaId,
+            };
+            return acc;
+        }, {});
+
+        const result_documents: ReportinspectType = {
+            inspect: stateObjectForOrders,
+            results: stateObjectForResults,
+            overall_results: {
+                chance_of_cancer: {
+                    answer: 0,
+                    description: "",
+                },
+            },
+        };
+
+        return result_documents;
+    } catch (err) {
+        console.error("Error setting up documents for assistant:", err);
+        return false;
+    }
+};
+
+
+export const updateInspectMole_Results = ({userId,sessionId,moleId,inspectData,resultData}:{
+    userId:string;
+    sessionId:string;
+    moleId:string;
+    inspectData: MoleAnswers;
+    resultData: ResultAnswers;
+}) => {
+    try{
+        const ref = doc(db,"assistants",userId,"Sessions",sessionId)
+        updateDoc(ref,{
+            [`result_documents.inspect.${moleId}`]:inspectData,
+            [`result_documents.results.${moleId}`]:resultData
+        })
+        return true
+    } catch(err) {
+        console.log(err)
+        return false
     }
 }
