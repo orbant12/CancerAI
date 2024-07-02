@@ -1,6 +1,6 @@
 import { collection, doc,getDocs, getDoc,updateDoc,deleteDoc,setDoc } from "firebase/firestore";
 import { db, storage } from "./firebase";
-import { SessionType, SpotData } from "@/utils/types";
+import { AssistantData, SessionType, SpotData } from "@/utils/types";
 import { MoleAnswers, OverallResultAnswers, ResultAnswers } from "@/app/assistant/sessions/[id]/page";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
@@ -48,14 +48,14 @@ export const fetchSingleAssistantData = async ({ userId }:FetchingProps) => {
         const ref = doc(db, "assistants", userId);
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
-            return snapshot.data();
+            return snapshot.data() as AssistantData ;
         } else {
             console.error(`Assistant with ID ${userId} does not exist.`);
-            return [];
+            return null;
         }
     } catch (err) {
         console.error("Error fetching assistant data:", err);
-        return [];
+        return null;
     }
 };
 

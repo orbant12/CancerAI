@@ -55,8 +55,8 @@ const LoggedOn_Navbar = ({
     <nav ref={navRef} className='sidebar active'>
       <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%",alignItems:"center"}}>
         <span style={{width:"100%",flexDirection:"column",display:"flex",justifyContent:"center"}}>
-          <a style={{textDecoration:"none",fontWeight:500,color:"black",fontSize:20,textAlign:"center"}} href="/">Pocket Protect</a>
-          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",marginLeft:10,borderRadius:5,padding:9,position:"absolute",left:130,flexDirection:"column",display:"flex"}}>
+          <a style={{textDecoration:"none",fontWeight:500,color:"white",fontSize:20,textAlign:"center",opacity:0.6}} href="/">Pocket Protect</a>
+          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",borderRadius:5,padding:9,flexDirection:"column",display:"flex",width:"100%",justifyContent:"center",alignItems:"center",cursor:"pointer",marginTop:10}}>
             <SlArrowLeft size={13} color='white' />
           </div>
         </span>
@@ -88,17 +88,17 @@ const LoggedOn_Navbar = ({
       <nav ref={navRef} className='sidebar'>
       <div style={{display:"flex",flexDirection:"column",width:"100%",justifyContent:"space-between",height:"100%"}}>
         <span style={{width:"100%",padding:0,fontSize:20,fontWeight:500,color:"black",textDecoration:"none",flexDirection:"column",display:"flex"}}>
-          <a style={{textDecoration:"none",fontWeight:500,color:"black"}} href="/">Logo</a>
-          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",borderRadius:5,padding:9,flexDirection:"column",display:"flex",width:"80%",justifyContent:"center",alignItems:"center"}}>
+          <a style={{textDecoration:"none",fontWeight:500,color:"white",opacity:0.6}} href="/">PP</a>
+          <div onClick={() => {setActive(!active),setPassActive(!active)}} style={{zIndex:100,backgroundColor:"black",borderRadius:5,padding:9,flexDirection:"column",display:"flex",width:"100%",justifyContent:"center",alignItems:"center",cursor:"pointer",marginTop:10}}>
             <SlArrowRight size={13} color='white' />
           </div>
         </span>
 
         <div style={{flexDirection:"column",width:"100%",display:"flex",alignItems:"center"}}>
-          <div style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:10,background:"black",marginBottom:10,width:"100%",alignItems:"center",borderRadius:5}}>
+          <div className='navIcon'>
             <SlEnvolopeLetter size={22} color='white' />
           </div>
-          <div style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:10,background:"black",marginBottom:10,width:"100%",alignItems:"center",borderRadius:5}}>
+          <div className='navIcon' >
             <SlBubble size={22} color='white' />
           </div>
         </div>
@@ -108,7 +108,7 @@ const LoggedOn_Navbar = ({
           <div className="nav-more">
             <SlMenu />
           </div>
-          <div onClick={handleLogOut} style={{background:"black",marginTop:10,padding:10,display:"flex",justifyContent:"center",alignItems:"center",borderRadius:5,cursor:"pointer"}}>
+          <div onClick={handleLogOut} className='logOffBtn'>
             <SlLogout style={{marginRight:5}} size={20} color='white' />            
           </div>
         </div>
@@ -129,7 +129,7 @@ const NavItem = ({
   title: string;
 }) => {
   return(
-    <div style={{flexDirection:"row",width:"100%",display:"flex",alignItems:"center",marginBottom:10,backgroundColor:"rgba(0,0,0,1)",padding:10,borderRadius:5}}>
+    <div className='navItem'>
     {icon()}
     <h5 style={{marginLeft:15,fontSize:17,color:"white",opacity:0.6,fontWeight:"400"}}>{title}</h5>
   </div>

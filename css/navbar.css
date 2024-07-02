@@ -138,6 +138,10 @@ nav .nav-bar .logo a{
     padding: 10px;
 }
 
+.nav-more:hover{
+    transform: scale(0.90);
+}
+
 .nav-more a{
     margin: 0 10px;
     font-size: 15px;
@@ -247,39 +251,92 @@ body.dark .search-field i{
       margin-top: 20px;
   }
 
-  .nav-more{
-    position: relative;
+    .nav-more{
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        justify-content: space-evenly;
+        cursor: pointer;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+        padding: 8px 8px;
+    }
+
+
+    .nav-more a:hover{
+        transform: scale(0.90);
+        cursor: pointer;
+    }
+
+    .nav-more a{
+        font-size: 10px;
+        color: rgb(0, 0, 0);
+        font-style: unset;
+        margin: 0 5px;
+    }
+
+    nav .nav-bar{
+        position: relative;
+        height: 100%;
+        width: 90%;
+        background-color: var(--nav-color);
+        padding: 0 0px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin-left: auto;
+        margin-right: auto;
+        justify-content: space-between;
+    }
+}
+
+
+.navIcon{
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    background: black;
+    margin-bottom: 10px;
+    width: 100%;
     align-items: center;
-    flex-direction: row;
-    justify-content: space-evenly;
+    border-radius: 5px;
     cursor: pointer;
-    background-color: var(--primary-color);
-    border-radius: 3px;
-    padding: 8px 8px;
-  }
+}
 
-  .nav-more a{
-      font-size: 10px;
-      color: rgb(0, 0, 0);
-      font-style: unset;
-      margin: 0 5px;
-  }
+.navIcon:hover{
+    transform: scale(0.90);
+}
 
-  nav .nav-bar{
-    position: relative;
-    height: 100%;
-    width: 90%;
-    background-color: var(--nav-color);
-    padding: 0 0px;
-    align-items: center;
-    display: flex;
+
+.navItem{
     flex-direction: row;
-    margin-left: auto;
-    margin-right: auto;
-    justify-content: space-between;
-  }
-  
-  
-  
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 1);
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navItem:hover{
+    transform: scale(0.95);
+}
+
+.logOffBtn{
+    background: black;
+    margin-top: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logOffBtn:hover{
+    transform: scale(0.90);
 }

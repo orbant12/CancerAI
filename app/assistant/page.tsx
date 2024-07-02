@@ -6,10 +6,12 @@ import { fetchSingleAssistantData } from "@/services/api";
 import { SlArrowRightCircle,SlBubble,SlEnvolopeLetter } from "react-icons/sl";
 import Link from "next/link";
 import "./assistant.css";
+import { AssistantData } from "@/utils/types";
+import { AssistData_Default } from "@/utils/initialValues";
 
 const Assistant_Dashboard: FC = () => {
   const { currentuser } = useAuth();
-  const [userData, setUserData] = useState<any>({}); 
+  const [userData, setUserData] = useState<AssistantData>(AssistData_Default); 
 
   const fetchUserData = async () => {
     if( currentuser){ 
@@ -17,6 +19,7 @@ const Assistant_Dashboard: FC = () => {
         const response = await fetchSingleAssistantData({
           userId: currentuser.uid,
         });
+        if (!response) return;
         setUserData(response);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -33,11 +36,11 @@ const Assistant_Dashboard: FC = () => {
   return (
     <div className="dashboard_container">
       <div className="board_welcome">
-        <div
+        <img src={userData.profileUrl} alt="profile_picture" 
           style={{
-            padding: 10,
+            padding: 0,
             borderRadius: 100,
-            border: "5px solid black",
+            border: "2px solid black",
             height: 150,
             width: 150,
           }}

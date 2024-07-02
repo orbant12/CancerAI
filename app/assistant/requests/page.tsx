@@ -94,6 +94,7 @@ const RequestPage = () => {
                 sessionData: sess,
             })
         })
+        fetchCurrentRequests()
     }
 
     React.useEffect(() => {
@@ -110,6 +111,7 @@ const RequestPage = () => {
                 headCells={headCells}
                 type='req'
                 tableTitle='Your Order Requests'
+                handleFinish={() => {}}
             />
             <Product_Showcase_Modal 
                 visible={selectedOrderForReview != null}

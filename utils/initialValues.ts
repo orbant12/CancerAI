@@ -11,6 +11,17 @@ export const UserData_Default = {
         fullname:""
 }
 
+export const AssistData_Default = {
+        email:"",
+        field:"",
+        fullname:"",
+        id:"",
+        phone:"",
+        profileUrl:"",
+
+}
+
+
 export const SessionData_Default = {
     
 }

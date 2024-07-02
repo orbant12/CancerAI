@@ -4,9 +4,11 @@
 
 import {  ReportinspectType } from "@/services/api";
 
+
+
 type Assistance_Fields = "dermotologist" 
 
-type AssustantData = {
+export type AssistantData = {
     fullname: string,
     email:string,
     field: string,
