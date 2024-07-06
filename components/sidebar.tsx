@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ReactNode, Ref, useRef, useState } from 'react';
-import { SlMenu } from "react-icons/sl";
+import { SlHome, SlMenu } from "react-icons/sl";
 import { SlLogout } from "react-icons/sl";
 import { MdAbc } from 'react-icons/md';
 import { SlArrowRight,SlArrowLeft,SlEnvolopeLetter,SlBubble } from "react-icons/sl";
@@ -9,6 +9,7 @@ import { signOut } from 'firebase/auth';
 import "../app/assistant/assistant.css"
 import { auth } from '@/services/firebase';
 import { useSidebar } from '@/Context/SidebarContext';
+import Link from "next/link";
 
 const SideBar = ({setPassActive}:{setPassActive:(active: boolean) => void}) => {
   const navRef = useRef<HTMLElement | null>(null);
@@ -63,12 +64,19 @@ const LoggedOn_Navbar = ({
 
         <div style={{flexDirection:"column",width:"100%",display:"flex"}}>
           <NavItem 
+            link={`/assistant`}
+            title='Home'
+            icon={() => <SlHome  size={22} color='white' opacity={0.7} />  }
+          />
+          <NavItem 
+            link={`/assistant/requests`}
             title='Job Requests'
             icon={() => <SlEnvolopeLetter  size={22} color='white' opacity={0.7} />  }
           />
           <NavItem 
             title='Active Sessions'
             icon={() => <SlBubble size={22} color='white' opacity={0.7}  />  }
+            link={`/assistant/sessions`}
           /> 
         </div>
 
@@ -95,12 +103,15 @@ const LoggedOn_Navbar = ({
         </span>
 
         <div style={{flexDirection:"column",width:"100%",display:"flex",alignItems:"center"}}>
-          <div className='navIcon'>
+          <Link href={`/assistant`} className='navIcon'>
+            <SlHome size={22} color='white' />
+          </Link>
+          <Link href={`/assistant/requests`} className='navIcon'>
             <SlEnvolopeLetter size={22} color='white' />
-          </div>
-          <div className='navIcon' >
+          </Link>
+          <Link href={`/assistant/sessions`} className='navIcon' >
             <SlBubble size={22} color='white' />
-          </div>
+          </Link>
         </div>
         
 
@@ -122,16 +133,18 @@ const LoggedOn_Navbar = ({
 
 const NavItem = ({
   icon,
-  title 
+  title,
+  link
 }:
 {
   icon:() => ReactNode;
   title: string;
+  link: string;
 }) => {
   return(
-    <div className='navItem'>
+  <Link href={link} className='navItem'>
     {icon()}
     <h5 style={{marginLeft:15,fontSize:17,color:"white",opacity:0.6,fontWeight:"400"}}>{title}</h5>
-  </div>
+  </Link>
   )
 }

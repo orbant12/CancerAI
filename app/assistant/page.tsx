@@ -96,7 +96,7 @@ const Dashboard_Item: FC<{ title: string; notification?: number; desc: string; i
         <Link
           href={path}
         >
-          <div onClick={() => window.location.href = path} className="service-box-btn">Open</div>
+          <div className="service-box-btn">Open</div>
         </Link>
     </div>
   );
